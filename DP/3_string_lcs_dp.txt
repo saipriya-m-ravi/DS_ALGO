@@ -1,0 +1,454 @@
+1] Regular Expression Matching
+🔹 Key Idea (DP)
+Let dp[i][j] = does s[0..i-1] match p[0..j-1]
+Base case: dp[0][0] = true
+
+🔹 Transitions
+1. Normal match or .
+If s[i-1] == p[j-1] OR p[j-1] == '.' then:
+dp[i][j] = dp[i-1][j-1]
+
+2. When * appears
+* means repeat previous character p[j-2]
+Two cases:
+❌ Take 0 occurrences
+dp[i][j] = dp[i][j-2]
+
+✅ Take 1 or more occurrences
+If s[i-1] == p[j-2] OR p[j-2] == '.' then:
+dp[i][j] |= dp[i-1][j]
+
+🔹 Code (Python)
+def isMatch(s: str, p: str) -> bool:
+    n, m = len(s), len(p)
+    
+    dp = [[False] * (m + 1) for _ in range(n + 1)]
+    dp[0][0] = True
+
+    # Handle patterns like a*, a*b*, etc.
+    for j in range(2, m + 1):
+        if p[j - 1] == '*':
+            dp[0][j] = dp[0][j - 2]
+
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+
+            if p[j - 1] == '.' or s[i - 1] == p[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+
+            elif p[j - 1] == '*':
+                # 0 occurrence
+                dp[i][j] = dp[i][j - 2]
+
+                # 1 or more occurrences
+                if p[j - 2] == '.' or s[i - 1] == p[j - 2]:
+                    dp[i][j] |= dp[i - 1][j]
+
+    return dp[n][m]
+🔹 Complexity
+Time: O(n × m)
+Space: O(n × m)
+
+🔹 Intuition Trick (VERY IMPORTANT)
+Whenever you see:
+'*' → think "expand or ignore"
+Ignore → j - 2
+Expand → i - 1
+
+If wildcard matching also needs to be included
+
+def isMatch(A: str, B: str) -> bool:
+    n, m = len(A), len(B)
+
+    dp = [[False] * (m + 1) for _ in range(n + 1)]
+    dp[0][0] = True
+
+    # pattern vs empty string
+    for j in range(1, m + 1):
+        if B[j - 1] == '*':
+            dp[0][j] = dp[0][j - 1]
+
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+
+            if B[j - 1] == '?' or A[i - 1] == B[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+
+            elif B[j - 1] == '*':
+                dp[i][j] = dp[i][j - 1] or dp[i - 1][j]
+
+    return dp[n][m]
+
+Intuition difference (SUPER IMPORTANT)
+
+Regex *: x* → repeats ONLY x
+So:
+must check match
+must look at j-2
+
+Wildcard *: * → matches ANY sequence
+So:
+no character check needed
+simple:
+dp[i][j-1] → match empty
+dp[i-1][j] → match more chars
+
+🧠 Golden Rule
+👉 If * depends on previous char → regex
+👉 If * is independent → wildcard
+
+2] Longest common subsequence
+dp[i][j] = LCS length of A[0..i-1] and B[0..j-1]
+
+Case 1: Characters match
+If A[i-1] == B[j-1] then
+dp[i][j] = 1 + dp[i-1][j-1]
+
+Case 2: Characters don’t match
+dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+
+🔹 Reconstructing the LCS string
+def get_lcs(A, B):
+    n, m = len(A), len(B)
+    dp = [[0] * (m + 1) for _ in range(n + 1)]
+
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            if A[i-1] == B[j-1]:
+                dp[i][j] = 1 + dp[i-1][j-1]
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+
+    i, j = n, m
+    res = []
+
+    while i > 0 and j > 0:
+        if A[i-1] == B[j-1]:
+            res.append(A[i-1])
+            i -= 1
+            j -= 1
+        elif dp[i-1][j] > dp[i][j-1]:
+            i -= 1
+        else:
+            j -= 1
+
+    return ''.join(reversed(res))
+
+🔹 Patterns You Should Recognize
+LCS is the base for:
+Longest Palindromic Subsequence
+Edit Distance
+Diff tools (Git)
+Shortest Common Supersequence
+
+🔹 Interview Insight (VERY IMPORTANT)
+If problem says:
+“subsequence” → think LCS
+“two strings” → likely 2D DP
+“maximize/minimize with order preserved” → LCS pattern
+
+3] Edit Distance
+dp[i][j] = minimum operations to convert A[0..i-1] → B[0..j-1]
+
+🔹 Base Cases
+dp[0][j] = j   # insert all characters
+dp[i][0] = i   # delete all characters
+
+🔹 Recurrence
+Case 1: Characters match
+
+If A[i-1] == B[j-1] Then:
+dp[i][j] = dp[i-1][j-1]
+
+Case 2: Characters don’t match
+
+We try all 3 operations:
+dp[i][j] = 1 + min(
+    dp[i-1][j],    # delete
+    dp[i][j-1],    # insert
+    dp[i-1][j-1]   # replace
+)
+
+🔹 Relation with LCS (INTERVIEW GOLD)
+If only insert + delete allowed (no replace):
+Edit Distance = len(A) + len(B) - 2 * LCS(A, B)
+
+🔹 Pattern Recognition
+If you see:
+“convert string A to B”
+“minimum operations”
+“insert/delete/replace”
+👉 immediately think: Edit Distance DP
+
+At every mismatch, try all operations and take minimum cost
+
+4] Distinct subsequences - Count number of distinct subsequences of A equal to B.
+
+dp[i][j] = number of ways to form B[0..j-1] from A[0..i-1]
+
+🔹 Base Cases
+dp[i][0] = 1   # empty B can always be formed
+dp[0][j] = 0   # non-empty B can't be formed from empty A
+
+🔹 Recurrence
+Case 1: Characters match
+If A[i-1] == B[j-1] Then we have 2 choices:
+Use this character
+Skip this character
+
+dp[i][j] = dp[i-1][j-1] + dp[i-1][j]
+
+Case 2: Characters don’t match
+dp[i][j] = dp[i-1][j]
+👉 Only option: skip character from A
+
+🔹 Code (Python)
+def numDistinct(A: str, B: str) -> int:
+    n, m = len(A), len(B)
+
+    dp = [[0] * (m + 1) for _ in range(n + 1)]
+
+    # Base case
+    for i in range(n + 1):
+        dp[i][0] = 1
+
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+
+            if A[i - 1] == B[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j]
+            else:
+                dp[i][j] = dp[i - 1][j]
+
+    return dp[n][m]
+
+🔹 Complexity
+Time: O(n × m)
+Space: O(n × m) → can optimize to O(m)
+
+🔹 Intuition (VERY IMPORTANT 🔥)
+
+When characters match:
+👉 “take it” + “leave it”
+
+When they don’t:
+👉 only “leave it”
+
+🔹 Space Optimized Version
+def numDistinct(A: str, B: str) -> int:
+    n, m = len(A), len(B)
+
+    dp = [0] * (m + 1)
+    dp[0] = 1
+
+    for i in range(1, n + 1):
+        for j in range(m, 0, -1):  # reverse loop!
+            if A[i - 1] == B[j - 1]:
+                dp[j] += dp[j - 1]
+
+    return dp[m]
+
+👉 Reverse loop is critical to avoid overwriting values.
+
+🔹 Pattern Recognition
+If problem says:
+“count ways”
+“subsequence”
+“match another string”
+
+👉 Think:
+LCS + counting instead of max
+
+🔹 Difference from LCS
+Problem	Goal
+LCS	-> maximize length
+This -> count number of ways
+
+-> Next time you see ANY DP problem, write this template:
+
+1. What is dp[i][j]?
+2. Base case?
+3. At (i, j), what choices do I have?
+
+Even if you get stuck → you will still move forward.
+
+✅ Step 1: Identify the category
+
+-> Ask:
+
+Clue in question	        Pattern
+subsequence + maximize	    LCS
+subsequence + count ways	Distinct Subsequences
+convert A → B	            Edit Distance
+pattern match (. *)	        Regex DP
+
+5] 3 strings
+dp[i][j][k] = LCS length of: A[0..i-1], B[0..j-1], C[0..k-1]
+
+if A[i-1] == B[j-1] == C[k-1]:
+    dp[i][j][k] = 1 + dp[i-1][j-1][k-1]
+else:
+    dp[i][j][k] = max(
+        dp[i-1][j][k],
+        dp[i][j-1][k],
+        dp[i][j][k-1]
+    )
+
+If you see: “LCS”, “3 strings”
+👉 Immediately think: “Just add one more dimension”
+
+6] Repeating subsequence
+👉 Repeating means:
+same subsequence appears at least twice
+indices used must be different
+
+🔥 Key Insight (VERY IMPORTANT)
+This is actually: 👉 LCS of string with itself, but with one restriction
+
+🔹 Idea
+Let:
+A = original string
+B = same string
+Now compute LCS of A and B, but: 🚨 Do NOT match same index i != j
+
+🔹 Why this works
+We are trying to find:same subsequence appearing twice
+So:
+first copy comes from A
+second copy comes from B
+but indices must differ → ensures repetition
+
+🔹 DP Definition
+dp[i][j] = LCS of A[0..i-1] and A[0..j-1]
+
+🔹 Recurrence
+✅ Case 1: Characters match AND indices differ
+A[i-1] == A[j-1] AND i != j
+dp[i][j] = 1 + dp[i-1][j-1]
+❌ Case 2: Otherwise
+dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+🔹 Final Answer
+If:dp[n][n] >= 2 👉 return True
+(Length ≥ 2 ensures it's not trivial)
+
+🔹 Code (Python)
+def repeatingSubsequence(A: str) -> bool:
+    n = len(A)
+
+    dp = [[0] * (n + 1) for _ in range(n + 1)]
+
+    for i in range(1, n + 1):
+        for j in range(1, n + 1):
+
+            if A[i - 1] == A[j - 1] and i != j:
+                dp[i][j] = 1 + dp[i - 1][j - 1]
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+
+    return dp[n][n] >= 2
+
+🔹 Intuition (THIS MAKES IT CLICK)
+Think like this:
+👉 “Can I pick two subsequences that are same but come from different indices?”
+Instead of explicitly generating subsequences:
+👉 we reuse LCS with a constraint
+
+🔹 Pattern Recognition
+If problem says:
+“repeating subsequence”
+“same subsequence appears twice”
+👉 Immediately think:
+LCS on same string + i != j
+
+7] Interleaving strings
+dp[i][j] = can we form C[0..i+j-1] using:
+           A[0..i-1] and B[0..j-1]
+
+Interleaving means:
+Maintain order of characters in A
+Maintain order of characters in B
+Mix them to form C
+
+🔹 First sanity check (VERY IMPORTANT)
+if len(C) != len(A) + len(B):
+    return False
+
+👉 If lengths don’t match → impossible
+
+🔹 Base Case
+dp[0][0] = True
+🔹 Transitions (CORE IDEA)
+At position (i, j) We want to match C[i + j - 1]
+✅ Option 1: Take from A
+If: A[i-1] == C[i+j-1]
+dp[i][j] |= dp[i-1][j]
+✅ Option 2: Take from B
+If:B[j-1] == C[i+j-1]
+dp[i][j] |= dp[i][j-1]
+
+🔹 Code (Python)
+
+def isInterleave(s1, s2, s3):
+    if len(s1) + len(s2) != len(s3):
+        return False
+    
+    s1 = " " + s1
+    s2 = " " + s2
+    s3 = " " + s3
+    
+    m = len(s1)
+    n = len(s2)
+    
+    dp = [[False]*n for _ in range(m)]
+    
+    dp[0][0] = True
+    
+    # first column
+    for i in range(1, m):
+        dp[i][0] = dp[i-1][0] and (s1[i] == s3[i])
+    
+    # first row
+    for j in range(1, n):
+        dp[0][j] = dp[0][j-1] and (s2[j] == s3[j])
+    
+    # fill dp
+    for i in range(1, m):
+        for j in range(1, n):
+            if s1[i] == s3[i+j] and dp[i-1][j]:
+                dp[i][j] = True
+            if s2[j] == s3[i+j] and dp[i][j-1]:
+                dp[i][j] = True
+    
+    return dp[m-1][n-1]
+
+🔹 Complexity
+Time: O(n × m)
+Space: O(n × m) → can optimize to O(m)
+
+🔹 Intuition (THIS MAKES IT CLICK)
+Think like this:
+👉 At every step in C, you must decide:
+did this character come from A?or from B?
+
+🔹 Pattern Recognition
+If problem says:
+“merge two strings”
+“interleave”
+“preserve order”
+👉 Think:
+2D DP + pick from A or B
+
+🔹 Mental Shortcut
+At (i, j):
+C index = i + j - 1
+Then:
+match A → go up
+match B → go left
+
+Notice the pattern again:
+
+Problem	            DP idea
+LCS	                match / skip
+Distinct subseq	    take / skip
+Regex	            expand / ignore
+Interleaving	    pick from A / B

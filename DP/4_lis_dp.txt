@@ -1,0 +1,230 @@
+1] Longest Increasing Subsequence
+Let dp[i] = length of LIS ending at index i
+dp[i] = 1 + max(dp[j]) for all j < i where A[j] < A[i]
+
+def lis(A):
+    n = len(A)
+    dp = [1] * n
+    
+    for i in range(n):
+        for j in range(i):
+            if A[j] < A[i]:
+                dp[i] = max(dp[i], dp[j] + 1)
+    
+    return max(dp)
+
+Complexity
+Time: O(N²)
+Space: O(N)
+
+2] Russian Doll Envelopes
+🔹 Key Insight (VERY IMPORTANT) ⭐
+We convert this into an LIS problem:
+
+Step 1: Sort envelopes.Sort by width increasing. If widths are same → sort height decreasing
+👉 Why decreasing height? Prevents invalid nesting when widths are equal
+
+Step 2: Extract heights
+After sorting, problem reduces to:
+👉 Find LIS on heights
+
+🔹 Optimal Solution (O(N log N)) 🚀
+import bisect
+
+def maxEnvelopes(envelopes):
+    # Step 1: sort
+    envelopes.sort(key=lambda x: (x[0], -x[1]))
+    
+    # Step 2: extract heights
+    heights = [h for _, h in envelopes]
+    
+    # Step 3: LIS on heights
+    tails = []
+    
+    for h in heights:
+        idx = bisect.bisect_left(tails, h)
+        
+        if idx == len(tails):
+            tails.append(h)
+        else:
+            tails[idx] = h
+    
+    return len(tails)
+🔹 Why Sorting Trick Works 🧠
+If we didn't sort heights in descending order for equal widths: [5,4], [5,5]
+👉 Heights: [4,5] → LIS would incorrectly count both ❌ But width is same → cannot nest
+So we force: [5,5], [5,4] 👉 Now LIS won't pick both ✔️
+
+🔹 Complexity
+Sorting: O(N log N)
+LIS (binary search): O(N log N)
+👉 Overall: O(N log N)
+
+🔹 Pattern Recognition 🔥
+
+This problem is a direct application of:
+2D → 1D reduction
+Sort one dimension
+Apply LIS on the other
+
+🔹 Similar Problems
+Box stacking
+Maximum chain of pairs
+LIS variations
+
+3] Arithmetic subsequences
+🔹 Key Insight 🧠
+Instead of just tracking length, we track:👉 difference between elements
+
+🔹 DP Idea
+Let: dp[i][diff] = number of subsequences ending at index i with difference diff
+
+🔹 Transition
+For every pair (j, i) where j < i:
+diff = A[i] - A[j]
+dp[i][diff] += dp[j][diff] + 1
+Why +1? dp[j][diff] → extend existing subsequences
++1 → new pair (A[j], A[i])
+
+🔹 Important Trick ⚠️
+👉 Only count subsequences of length ≥ 3
+So:answer += dp[j][diff] NOT +1 (because pairs are length 2)
+
+🔹 Code (O(N²)) 🚀
+from collections import defaultdict
+
+def numberOfArithmeticSlices(A):
+    n = len(A)
+    dp = [defaultdict(int) for _ in range(n)]
+    ans = 0
+    
+    for i in range(n):
+        for j in range(i):
+            diff = A[i] - A[j]
+            
+            count = dp[j][diff]
+            dp[i][diff] += count + 1
+            
+            ans += count   # only sequences length >= 3
+    
+    return ans
+
+🔹 Complexity
+Time: O(N²)
+Space: O(N²) (in worst case)
+
+🔹 Intuition Simplified 🔥
+Think like this: For each i, look back at all j try to extend sequences that had same difference
+Also start a new sequence of length 2
+
+🔹 Pattern Recognition
+This is a "DP with hashmap per index" pattern:
+
+Problem	                        State
+LIS	                            dp[i]
+Russian Doll	                LIS
+Arithmetic subsequence	        dp[i][diff]
+
+🔹 Common Mistakes ❌
+Counting pairs (length 2) in answer
+Not using hashmap → leads to TLE
+
+4] Longest fibonacci sequence
+🔹 Key Insight 🧠
+We try to build sequences ending at (j, i).
+Let:dp[j][i] = length of Fibonacci-like subsequence ending with A[j], A[i]
+
+🔹 Transition
+We want a previous element k such that:
+A[k] + A[j] = A[i]
+→ A[k] = A[i] - A[j]
+
+So: dp[j][i] = dp[k][j] + 1
+If no such k, then start fresh: dp[j][i] = 2
+
+🔹 Optimization 🚀
+Use a hashmap: value → index
+So we can find k in O(1)
+
+🔹 Code (O(N²))
+def lenLongestFibSubseq(A):
+    n = len(A)
+    index = {x: i for i, x in enumerate(A)}
+    
+    dp = [[2] * n for _ in range(n)]
+    max_len = 0
+    
+    for i in range(n):
+        for j in range(i):
+            prev = A[i] - A[j]
+            
+            if prev < A[j] and prev in index:
+                k = index[prev]
+                dp[j][i] = dp[k][j] + 1
+                max_len = max(max_len, dp[j][i])
+    
+    return max_len if max_len >= 3 else 0
+
+🔹 Why prev < A[j]? ⚠️
+Ensures indices are valid (k < j). avoids duplicate counting
+
+🔹 Complexity
+Time: O(N²)
+Space: O(N²)
+
+🔹 Pattern Recognition 🔥
+This belongs to: 👉 "DP on pairs" pattern
+
+Problem	                    State
+LIS	                        dp[i]
+Arithmetic subsequence	    dp[i][diff]
+Fibonacci subsequence	    dp[j][i]
+
+5] 2,3,5 game
+
+for i in range(6,len(dp)):
+    if dp[i-2]==0 or dp[i-3]==0 or dp[i-5]==0:
+        dp[i]=1
+
+6] Box Stacking problem
+
+def maxHeight(boxes):
+    rotations = []
+    
+    # Step 1: generate rotations
+    for l, w, h in boxes:
+        rotations.append((max(l,w), min(l,w), h))
+        rotations.append((max(w,h), min(w,h), l))
+        rotations.append((max(l,h), min(l,h), w))
+    
+    # Step 2: sort by base area descending
+    rotations.sort(key=lambda x: x[0]*x[1], reverse=True)
+    
+    n = len(rotations)
+    dp = [0] * n
+    
+    # Step 3: initialize dp
+    for i in range(n):
+        dp[i] = rotations[i][2]  # height
+    
+    # Step 4: LIS-like DP
+    for i in range(n):
+        for j in range(i):
+            if (rotations[j][0] > rotations[i][0] and
+                rotations[j][1] > rotations[i][1]):
+                dp[i] = max(dp[i], dp[j] + rotations[i][2])
+    
+    return max(dp)
+
+🔹 Intuition 🔥
+
+This is basically:
+👉 2D LIS (length & width) + weight (height)
+
+So:
+Russian Doll → maximize count
+Box Stacking → maximize sum (height)
+
+Pattern Recognition 🧩
+This falls under:
+👉 Weighted LIS in 2D

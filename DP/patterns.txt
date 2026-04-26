@@ -1,0 +1,227 @@
+Dynamic Programming =
+Recursion + Memoization OR Tabulation (bottom-up)
+
+DP is used when:
+Problem has optimal substructure
+Problem has overlapping subproblems
+
+🔥 MASTER DP THINKING FRAMEWORK
+Before solving any DP:
+Define state
+Define transition
+Define base case
+Decide top-down or bottom-up
+Optimize space if possible
+
+🟢 CATEGORY 1: 1D DP (Linear DP)
+
+🔹 Pattern 1: Fibonacci Type
+State depends on previous 1–2 states.
+
+Example:
+Fibonacci
+Climbing stairs
+Min cost climbing stairs
+
+Transition:
+dp[i] = dp[i-1] + dp[i-2]
+
+Time: O(N)
+
+🔹 Pattern 2: Kadane’s Algorithm
+Used in:
+Maximum subarray
+Maximum product subarray
+
+Transition:
+dp[i] = max(arr[i], dp[i-1] + arr[i])
+
+Key idea:
+Keep local best.
+
+🔹 Pattern 3: House Robber Type
+Cannot take adjacent elements.
+
+Transition:
+dp[i] = max(dp[i-1], dp[i-2] + nums[i])
+
+Variants:
+Circular
+Tree version (DP on tree)
+
+🟢 CATEGORY 2: 2D DP (Grid / Matrix DP)
+
+🔹 Pattern 4: Grid Movement DP
+Used in:
+Unique paths
+Min path sum
+Dungeon game
+
+Transition:
+dp[i][j] = dp[i-1][j] + dp[i][j-1]
+
+Or min/max variant.
+
+🔹 Pattern 5: Substring DP
+Used in:
+Palindrome substring
+Longest palindromic substring
+
+Transition depends on smaller substring:
+dp[i][j] = s[i]==s[j] and dp[i+1][j-1]
+
+Order matters: fill bottom-up.
+
+🟢 CATEGORY 3: Subsequence DP
+
+🔥 Pattern 6: Longest Increasing Subsequence (LIS)
+
+Transition:
+dp[i] = max(dp[j] + 1 for j<i if nums[j] < nums[i])
+
+Time:
+O(N²) DP
+O(N log N) optimized
+
+🔥 Pattern 7: Longest Common Subsequence (LCS)
+
+Classic 2D DP.
+
+if s1[i]==s2[j]:
+    dp[i][j] = 1 + dp[i-1][j-1]
+else:
+    dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+
+Used in:
+Edit distance
+Delete operations
+Shortest common supersequence
+
+🔥 Pattern 8: Knapsack Pattern
+
+0/1 Knapsack
+dp[i][w] = max(dp[i-1][w], value[i] + dp[i-1][w-weight[i]])
+
+Used in:
+Subset sum
+Equal partition
+Target sum
+Count subsets
+
+Unbounded Knapsack
+You can reuse items:
+dp[w] = max(dp[w], value + dp[w-weight])
+
+Used in:
+Coin change
+Rod cutting
+
+🟢 CATEGORY 4: Partition DP
+
+Used when splitting array/string into segments.
+
+Examples:
+Palindrome partitioning II
+Matrix chain multiplication
+Burst balloons
+
+Transition:
+dp[i][j] = min(dp[i][k] + dp[k+1][j] + cost)
+
+Time: O(N³) often.
+
+🟢 CATEGORY 5: Interval DP
+
+Similar to partition.
+
+Used in:
+Burst balloons
+Merge stones
+
+Key:
+Solve smaller intervals first.
+
+🟢 CATEGORY 6: DP on Trees
+
+Tree + DP.
+
+Example:
+House Robber III
+
+return (rob_this, not_rob_this)
+
+Each node returns multiple states.
+
+🟢 CATEGORY 7: Bitmask DP (Advanced)
+
+Used when:
+N ≤ 20
+
+State is subset
+
+Example:
+Traveling salesman
+Assign jobs
+Minimum XOR pairing
+
+State:
+dp[mask]
+
+Time:
+O(N * 2^N)
+
+🟢 CATEGORY 10: DP + Binary Search
+
+Used in:
+LIS optimized
+
+Weighted job scheduling
+
+🔥 HIGH-IMPACT DP TRICKS
+⚡ Trick 1: Convert Recursion to DP
+
+Always start with recursion. Then memoize.
+
+⚡ Trick 2: Reduce Dimensions
+
+If dp[i] depends only on dp[i-1] use 1D array.
+
+⚡ Trick 3: Reverse Loop for 0/1 Knapsack
+
+To avoid reuse:
+for w in reversed(range(W+1)):
+
+⚡ Trick 4: Think Backwards in Substring Problems
+
+Start from small substrings.
+
+⚡ Trick 5: Time Complexity Estimation
+
+DP complexity roughly equals:
+(number of states) × (transition cost)
+
+Example:
+LCS → N×M states
+Knapsack → N×W states
+Bitmask → 2^N states
+
+🧠 HOW TO IDENTIFY DP IN INTERVIEW
+
+If problem asks:
+Count ways
+Minimize cost
+Maximize value
+Longest / shortest
+Partition into groups
+Decide true/false with constraints
+
+Very likely DP.
+
+🏆 MASTER DP CHECKLIST
+Before coding:
+What is my state?
+How many states?
+Transition?
+Base case?
+Iteration order?
+Can I optimize space?

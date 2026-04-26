@@ -1,0 +1,464 @@
+1]  Matrix Chain Multiplication
+
+dp[i][j] = minimum cost to multiply matrices from i to j
+
+This is a range DP problem:
+You solve smaller segments first
+Then build larger segments
+👉 Pattern: “Try all possible partitions and take the best”
+
+MCM belongs to: 👉 Partition DP problems, like:
+Palindrome Partitioning
+Burst Balloons
+Boolean Parenthesization
+
+Whenever you see:
+"Try all ways to split"
+"Minimize/maximize cost"
+"Expression or sequence partitioning"
+👉 Think MCM pattern immediately
+
+for k in range(i, j):
+    ans = min(ans,
+              solve(i, k) +
+              solve(k+1, j) +
+              cost_of_split)
+
+def matrix_chain_multiplication(arr):
+    n = len(arr)
+    
+    # dp[i][j] = minimum cost to multiply matrices from i to j
+    dp = [[0] * n for _ in range(n)]
+    
+    # length of chain
+    for length in range(2, n):
+        for i in range(1, n - length + 1):
+            j = i + length - 1
+            dp[i][j] = float('inf')
+            
+            for k in range(i, j):
+                cost = (dp[i][k] +
+                        dp[k+1][j] +
+                        arr[i-1] * arr[k] * arr[j])
+                
+                dp[i][j] = min(dp[i][j], cost)
+    
+    return dp[1][n-1]
+
+⏱ Complexity
+Time: O(N³)
+Space: O(N²)
+
+for length:                     => length of range
+    for i:                      => start of range
+        j = i + length - 1      => end of range
+        for k:                  => splits positions
+            dp[i][j] = min(...)
+
+Whenever you see:
+“split array / expression”
+“minimum cost”
+
+👉 Immediately think:
+for k in range(i, j):
+
+That line is the heart of MCM
+
+“Fix range → try all cuts → combine left + right + cost”
+
+2] Palindrome Partitioning
+You are given a string A
+👉 Split it into substrings such that each substring is a palindrome
+Goal: 👉 Minimize the number of cuts
+
+This is Partition DP, same pattern as MCM:👉 Try all possible cuts and take minimum
+But here: Only cut if substring is palindrome
+
+Optimized Approach (O(N²))
+Step 1: Precompute Palindrome Table
+is_pal[i][j] = True if A[i:j+1] is palindrome
+
+Step 2: DP Definition
+dp[i] = minimum cuts needed for substring A[0:i]
+
+Step 3: Transition
+If A[j:i] is palindrome: dp[i] = min(dp[i], dp[j-1] + 1)
+Special case: If whole substring is palindrome → dp[i] = 0
+
+✅ Python Code (Best Solution)
+def minCut(s):
+    n = len(s)
+    
+    # Step 1: Precompute palindrome table
+    is_pal = [[False]*n for _ in range(n)]
+    
+    for i in range(n):
+        is_pal[i][i] = True
+    
+    for length in range(2, n+1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            
+            if s[i] == s[j]:
+                if length == 2:
+                    is_pal[i][j] = True
+                else:
+                    is_pal[i][j] = is_pal[i+1][j-1]
+    
+    # Step 2: DP for min cuts
+    dp = [0]*n
+    
+    for i in range(n):
+        if is_pal[0][i]:
+            dp[i] = 0
+        else:
+            dp[i] = float('inf')
+            for j in range(i):
+                if is_pal[j+1][i]:
+                    dp[i] = min(dp[i], dp[j] + 1)
+    
+    return dp[n-1]
+⏱ Complexity
+Time: O(N²)
+Space: O(N²)
+
+🧠 Intuition (VERY IMPORTANT)
+This is exactly like MCM:
+MCM	                    Palindrome Partitioning
+Split at k	            Cut at j
+Cost of multiplication	Only valid if palindrome
+Min over all partitions	Min cuts
+
+🔥 Pattern Recognition
+Whenever you see:
+"Split string"
+"Min cuts / partitions"
+"Condition on substring"
+👉 Think: Partition DP + Precomputation
+
+Readymade palindrome checking function:
+for length in range(2, n+1):
+    for i in range(n - length + 1):
+        j = i + length - 1
+        
+        if s[i] == s[j]:
+            if length == 2:
+                is_pal[i][j] = True
+            else:
+                is_pal[i][j] = is_pal[i+1][j-1]
+
+When stuck, just say:“I will CUT before every palindrome suffix”
+That line alone unlocks the logic:
+Fix end = i
+Try all j
+Check if s[j+1:i] is palindrome
+
+👉 This is your only thinking step, but even this can be memorized as:
+“If right part is palindrome → cut before it”
+
+3] Word break
+🧠 Problem
+Given: String s, Dictionary wordDict
+👉 Return True/False: Can you split s into valid dictionary words?
+
+🧩 Pattern Recognition
+Whenever you see:
+“Can we split string…”
+“Dictionary / valid words”
+👉 Think: DP on prefix
+Define: dp[i] = True if s[0:i] can be formed 👉 Goal: dp[n]
+
+⚙️ Transition
+Try all splits:
+
+for j in range(i):
+    if dp[j] and s[j:i] in wordDict:
+        dp[i] = True
+
+👉 Meaning:
+Left part valid
+Right part is a word
+
+✅ Python Code (Clean)
+def wordBreak(s, wordDict):
+    wordSet = set(wordDict)  # O(1) lookup
+    n = len(s)
+    
+    dp = [False] * (n + 1)
+    dp[0] = True   # empty string is valid
+    
+    for i in range(1, n + 1):
+        for j in range(i):
+            if dp[j] and s[j:i] in wordSet:
+                dp[i] = True
+                break   # important optimization
+    
+    return dp[n]
+
+⏱ Complexity
+Time: O(N²)
+Space: O(N)
+
+🧠 Mental Shortcut (IMPORTANT)
+When stuck, just remember:
+“Cut at every position and check if right part is valid word”
+
+🔥 Compare with Previous Problems
+Problem	                    Pattern
+MCM	Partition               DP (range)
+Palindrome Partitioning	    Partition DP + condition
+Word Break	                Prefix DP
+
+dp[i] = True if ANY valid cut exists before i
+
+4] Longest Palindromic Subsequence
+Pattern : DP on substring (range DP)
+
+dp[i][j] = length of LPS in s[i:j+1]
+
+🧠 Core Idea
+Define: dp[i][j] = length of LPS in s[i:j+1]
+
+⚙️ Transition
+Case 1: Characters match
+If: s[i] == s[j] then:
+dp[i][j] = 2 + dp[i+1][j-1]
+
+Case 2: Characters don’t match
+dp[i][j] = max(dp[i+1][j], dp[i][j-1])
+
+✅ Base Case
+dp[i][i] = 1
+(single character is palindrome)
+
+📐 Visualization (Important)
+You fill DP like this:
+👉 from bottom to top
+👉 i decreasing, j increasing
+
+✅ Python Code
+def longestPalindromeSubseq(s):
+    n = len(s)
+    
+    dp = [[0]*n for _ in range(n)]
+    
+    # base case
+    for i in range(n):
+        dp[i][i] = 1
+    
+    # fill table
+    for i in range(n-1, -1, -1):
+        for j in range(i+1, n):
+            if s[i] == s[j]:
+                dp[i][j] = 2 + dp[i+1][j-1]
+            else:
+                dp[i][j] = max(dp[i+1][j], dp[i][j-1])
+    
+    return dp[0][n-1]
+
+⏱ Complexity
+Time: O(N²)
+Space: O(N²)
+
+One-line takeaway
+“If I need i+1, I must compute from bottom to top”
+
+👉 This problem is actually:
+LCS of string and its reverse
+LPS(s) = LCS(s, reverse(s))
+
+🔥 Alternate Code (LCS Trick)
+def longestPalindromeSubseq(s):
+    t = s[::-1]
+    n = len(s)
+    
+    dp = [[0]*(n+1) for _ in range(n+1)]
+    
+    for i in range(1, n+1):
+        for j in range(1, n+1):
+            if s[i-1] == t[j-1]:
+                dp[i][j] = 1 + dp[i-1][j-1]
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    
+    return dp[n][n]
+
+💡 Mental Shortcut (When You Blank)
+Just remember:
+“If ends match → include both
+Else → skip one end”
+
+🔥 Pattern Map
+Problem	                            Pattern
+Longest Palindromic Subseq	        Range DP
+Longest Palindromic Substring	    Expand center
+
+6] Longest Palindromic Substring
+🧠 Best Approach: Expand Around Center
+👉 Key idea: Every palindrome expands from a center
+
+Odd length → center at i → "aba"
+Even length → center between i and i+1 → "abba"
+
+⚙️ Algorithm
+For every index i:
+Expand for odd length
+Expand for even length
+Track the longest substring
+
+If tie → keep leftmost (automatic if you update carefully)
+
+✅ Python Code (Clean & Interview Ready)
+def longestPalindrome(s):
+    n = len(s)
+    
+    start = 0
+    max_len = 0
+    
+    def expand(left, right):
+        while left >= 0 and right < n and s[left] == s[right]:
+            left -= 1
+            right += 1
+        return left + 1, right - 1  # valid bounds
+    
+    for i in range(n):
+        # odd length
+        l1, r1 = expand(i, i)
+        
+        # even length
+        l2, r2 = expand(i, i+1)
+        
+        # pick longer
+        if r1 - l1 > max_len:
+            start = l1
+            max_len = r1 - l1
+        
+        if r2 - l2 > max_len:
+            start = l2
+            max_len = r2 - l2
+    
+    return s[start:start + max_len + 1]
+
+⏱ Complexity
+Time: O(N²)
+Space: O(1) ✅
+
+🧠 Why This Works (Important)
+👉 Every palindrome has a center
+👉 Expanding avoids recomputation
+👉 Better than DP for this problem
+
+🔥 Mental Shortcut
+
+When you see: “palindromic substring”
+👉 Immediately think: “Expand around center”
+
+⚠️ Common Mistake
+Don’t confuse with:
+❌ Palindromic subsequence → DP
+✅ Palindromic substring → Expand
+
+7] Max Rectangle in Binary Matrix
+🔥 Pattern Recognition
+When you see:
+“largest rectangle”
+“binary matrix”
+👉 Think: Convert to histogram + monotonic stack
+💡 Mental Shortcut : “Row by row → build heights → solve histogram”
+
+7] Unique BSTS
+Given A nodes (values 1 to A), count how many unique BSTs can be formed.
+
+Pick each number i as root:
+Left subtree → nodes [1 ... i-1] → i-1 nodes
+Right subtree → nodes [i+1 ... A] → A-i nodes
+👉 Total trees with root i: left_subtrees * right_subtrees
+
+dp[n] = Σ (dp[i-1] * dp[n-i])   for i = 1 to n
+
+When you see:
+“unique BST”
+“count structures”
+👉 Think:
+“Fix root → left × right → sum over all roots”
+
+8] Coins in a Line
+game strategy DP version
+
+🧠 Problem (Standard Version)
+You’re given an array of coins.
+Two players pick coins from either end.
+👉 Both play optimally
+👉 You go first
+
+Goal: 👉 Maximize the value you collect
+
+🧩 Key Insight (VERY IMPORTANT)
+This is not greedy ❌
+This is game DP (min-max thinking)
+
+🧠 Core Idea
+Define:
+dp[i][j] = maximum value you can collect from coins[i...j]
+
+⚙️ Transition
+When you pick:
+Case 1: Pick left coin i. Opponent will play optimally and minimize your gain
+coins[i] + min(dp[i+2][j], dp[i+1][j-1])
+
+Case 2: Pick right coin j 
+coins[j] + min(dp[i+1][j-1], dp[i][j-2])
+
+Final:
+dp[i][j] = max(
+    pick_left,
+    pick_right
+)
+✅ Python Code
+def maxCoins(coins):
+    n = len(coins)
+    
+    dp = [[0]*n for _ in range(n)]
+    
+    # base case: single coin
+    for i in range(n):
+        dp[i][i] = coins[i]
+    
+    # fill table
+    for length in range(2, n+1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            
+            x = dp[i+2][j] if i+2 <= j else 0
+            y = dp[i+1][j-1] if i+1 <= j-1 else 0
+            z = dp[i][j-2] if i <= j-2 else 0
+            
+            pick_left = coins[i] + min(x, y)
+            pick_right = coins[j] + min(y, z)
+            
+            dp[i][j] = max(pick_left, pick_right)
+    
+    return dp[0][n-1]
+
+⏱ Complexity
+Time: O(N²)
+Space: O(N²)
+
+🧠 Intuition (CRITICAL)
+👉 You maximize
+👉 Opponent minimizes
+
+So every step is:
+max( your choice + min(opponent future choices) )
+
+🔥 Pattern Recognition
+When you see:
+“2 players”
+“optimal play”
+“pick from ends”
+
+👉 Think:
+Game Theory DP (min-max)
+
+💡 Mental Shortcut
+“I choose → opponent minimizes my next move”

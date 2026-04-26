@@ -1,0 +1,109 @@
+1] Best time to buy and sell stocks 1
+🔹 Idea (Greedy / DP intuition)
+You want to: 
+Buy at the lowest price so far
+Sell at the highest profit later
+
+So while iterating:
+Track minimum price seen so far
+At each step, calculate profit = current price - min price
+Keep updating maximum profit
+
+def maxProfit(prices):
+    min_price = float('inf')
+    max_profit = 0
+
+    for price in prices:
+        min_price = min(min_price, price)
+        profit = price - min_price
+        max_profit = max(max_profit, profit)
+
+    return max_profit
+
+Key Insight : “If I sell today, what’s the best profit I could have made?”
+
+2] “Best Time to Buy and Sell Stock II” (multiple transactions allowed).
+If multiple transactions are allowed, the optimal strategy is:
+Take every profit you can whenever price increases
+
+Instead of finding one global buy/sell, you:
+Buy before every rise
+Sell at every peak
+
+If prices[i] > prices[i-1], then:
+Profit += prices[i] - prices[i-1]
+
+def maxProfit(prices):
+    profit = 0
+
+    for i in range(1, len(prices)):
+        if prices[i] > prices[i - 1]:
+            profit += prices[i] - prices[i - 1]
+
+    return profit
+
+3] Best Time to Buy and Sell Stock III” (at most 2 transactions)
+🔹 Intuition (Think in Transactions)
+You are allowed:
+Buy → Sell → Buy → Sell (2 transactions max)
+
+We track 4 states:
+buy1 → best profit after first buy
+sell1 → best profit after first sell
+buy2 → best profit after second buy
+sell2 → best profit after second sell
+
+🔹 State Transitions
+At each price:
+
+buy1  = max(buy1, -price)
+sell1 = max(sell1, buy1 + price)
+
+buy2  = max(buy2, sell1 - price)
+sell2 = max(sell2, buy2 + price)
+
+def maxProfit(prices):
+    buy1 = float('-inf')
+    sell1 = 0
+    buy2 = float('-inf')
+    sell2 = 0
+
+    for price in prices:
+        buy1 = max(buy1, -price)
+        sell1 = max(sell1, buy1 + price)
+        buy2 = max(buy2, sell1 - price)
+        sell2 = max(sell2, buy2 + price)
+
+    return sell2
+
+🔹 Why this works
+Think of it like:
+First transaction builds profit → sell1
+Second transaction reuses that profit → buy2 = sell1 - price
+So you're effectively reinvesting profit from first trade.
+
+🔹 Complexity
+Time: O(n)
+Space: O(1)
+
+🔹 Pattern Insight (VERY IMPORTANT)
+This generalizes:
+
+Transactions	States Needed
+1	            2 states
+2	            4 states
+k	            2k states
+
+If interviewer asks:
+“What if k transactions?”
+You extend this pattern using arrays: buy[i], sell[i]
+
+🔹 One-line meanings (super important)
+buy1 → best balance after 1st buy
+sell1 → best balance after 1st sell
+buy2 → best balance after 2nd buy
+sell2 → best balance after 2nd sell
+
+You are not tracking transactions explicitly
+You are tracking best possible money in hand at each stage
+

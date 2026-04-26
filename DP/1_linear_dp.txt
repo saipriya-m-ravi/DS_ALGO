@@ -1,0 +1,284 @@
+Pattern : DP on linear sequence with choices
+State depends on previous k states
+Usually becomes Fibonacci-like
+
+1] Staircase problem - You are climbing a staircase and it takes A steps to reach the top. 
+Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+dp[i] = number of ways to reach step i
+
+Now think: To reach step i:
+If last move was 1 step → ways = dp[i-1]
+If last move was 2 steps → ways = dp[i-2]
+
+So: dp[i] = dp[i-1] + dp[i-2]
+
+Template :
+
+🧠 Step 0: Start with pure thinking (no DP yet)
+
+Question: “How many ways to reach step A?”
+Think backwards: To reach step A, where could you come from?
+Step A-1 (1 step jump)
+Step A-2 (2 step jump)
+
+So: ways(A) = ways(A-1) + ways(A-2)
+
+🌱 Step 1: Write Recursion (Brute Force)
+def ways(n):
+    if n == 0 or n == 1:
+        return 1
+    
+    return ways(n-1) + ways(n-2)
+
+🔴 Problem with recursion
+Draw recursion tree for n = 5:
+ways(5)
+├── ways(4)
+│   ├── ways(3)
+│   │   ├── ways(2)
+│   │   └── ways(1)
+│   └── ways(2)
+└── ways(3)
+    ├── ways(2)
+    └── ways(1)
+
+👉 Notice: ways(3) computed multiple times, ways(2) computed MANY times
+
+⏱️ Complexity (Recursion)
+Time: O(2^N) ❌ (exponential)
+Space: O(N) (recursion stack)
+
+🧠 Key Insight 👉 “Same subproblems are being recomputed”. This is where DP starts.
+
+⚡ Step 2: Memoization (Top-down DP)
+👉 Store results once computed.
+
+def ways(n, dp):
+    if n == 0 or n == 1:
+        return 1
+    
+    if dp[n] != -1:
+        return dp[n]
+    
+    dp[n] = ways(n-1, dp) + ways(n-2, dp)
+    return dp[n]
+
+
+def climbStairs(A):
+    MOD = 1000000007
+    dp = [-1] * (A + 1)
+    return ways(A, dp) % MOD
+
+✅ What improved? Each state computed only once
+
+⏱️ Complexity (Memoization)
+Time: O(N) ✅
+Space:
+DP array: O(N)
+Recursion stack: O(N)
+
+🧱 Step 3: Tabulation (Bottom-up DP) 👉 Convert recursion into iteration
+Idea: Instead of going top-down, build from base cases.
+
+def climbStairs(A):
+    MOD = 1000000007
+    
+    dp = [0] * (A + 1)
+    dp[0] = 1
+    dp[1] = 1
+    
+    for i in range(2, A + 1):
+        dp[i] = (dp[i-1] + dp[i-2]) % MOD
+    
+    return dp[A]
+
+⏱️ Complexity (Tabulation)
+Time: O(N)
+Space: O(N)
+
+🚀 Step 4: Space Optimization
+👉 Only last 2 states needed
+
+def climbStairs(A):
+    MOD = 1000000007
+    
+    if A <= 1:
+        return 1
+    
+    prev2 = 1
+    prev1 = 1
+    
+    for i in range(2, A + 1):
+        curr = (prev1 + prev2) % MOD
+        prev2 = prev1
+        prev1 = curr
+    
+    return prev1
+
+⏱️ Final Complexity
+Time: O(N)
+Space: O(1) ✅
+
+🔁 Full Journey Summary
+Approach	Time	Space	Key Idea
+Recursion	O(2^N)	O(N)	brute force
+Memoization	O(N)	O(N)	cache results
+Tabulation	O(N)	O(N)	bottom-up
+Optimized	O(N)	O(1)	keep last 2
+
+🧠 Interview Insight (VERY IMPORTANT)
+When solving DP, always follow this order:
+Write recursion first
+Identify overlapping subproblems
+Add memoization
+Convert to tabulation
+Optimize space if possible
+
+💡 Mental Template
+Whenever you see:
+“count ways”
+“min/max cost”
+“reach target”
+
+Ask:
+“How can I reach this state from smaller states?”
+That gives recurrence → which gives DP.
+
+2] Lets Party - one person can party either alone or can pair up with another person.
+f(A) = f(A-1) + (A-1) * f(A-2)
+
+Whenever you see:
+“pairing”
+“matching”
+“grouping in pairs”
+
+👉 Think:
+Fix one element
+Either:
+leave it → f(n-1)
+pair it → choices × f(n-2)
+
+3] Minimum number of squares - Given an integer A. Return minimum count of numbers, sum of whose squares is equal to A.
+dp[n] = minimum number of squares to form n
+dp[n] = min(dp[n], 1 + dp[n - j²])  for all j such that j² ≤ n
+
+def solve(A):
+    dp = [float('inf')] * (A + 1)
+    dp[0] = 0
+    
+    for i in range(1, A + 1):base
+        j = 1
+        while j*j <= i:
+            dp[i] = min(dp[i], 1 + dp[i - j*j])
+            j += 1
+    
+    return dp[A]
+
+4] Max Sum Without Adjacent Elements
+
+Given a 2 x N grid of integers, A, your task is to choose numbers from the grid such that sum of these numbers is maximized. 
+However, you cannot choose two numbers that are adjacent horizontally, vertically, or diagonally. 
+Return the maximum possible sum.
+
+🧠 Step 1: Understand constraints
+Grid is 2 x N. You cannot pick adjacent cells:
+❌ Same column (vertical)
+❌ Adjacent columns (horizontal)
+❌ Diagonal (which effectively also blocks adjacent columns)
+
+👉 Key observation:If you pick anything from column i, you cannot pick anything from column i-1 or i+1
+
+🔥 Step 2: Collapse the grid
+Each column has 2 values: A[0][i], A[1][i]
+Since you cannot pick both (vertical restriction), you will pick:
+col[i] = max(A[0][i], A[1][i])
+Now problem becomes: Pick elements from this 1D array such that no two adjacent are chosen → maximize sum
+
+🧠 Step 3: Recognize pattern
+This is exactly the House Robber problem
+
+⚡ Step 4: Define DP
+Let:dp[i] = max sum considering columns up to i
+Choices:
+Skip current → dp[i-1]
+Take current → col[i] + dp[i-2]
+
+🔁 Recurrence
+dp[i] = max(dp[i-1], col[i] + dp[i-2])
+
+def solve(A):
+    n = len(A[0])
+    
+    prev2 = 0
+    prev1 = 0
+    
+    for i in range(n):
+        curr_val = max(A[0][i], A[1][i])
+        curr = max(prev1, curr_val + prev2)
+        
+        prev2 = prev1
+        prev1 = curr
+    
+    return prev1
+
+🧠 Key Insight (VERY IMPORTANT)
+Why reduction works?
+Because Picking any cell in column i blocks:
+same column (vertical)
+adjacent columns (horizontal + diagonal)
+👉 So column behaves like a single unit
+
+🔥 Pattern Learned
+“Grid → 1D Reduction + House Robber”
+
+Whenever you see:
+Small fixed rows (2 rows especially)
+Adjacency constraints across directions
+👉 Try:Collapse dimension → reduce to 1D DP
+
+💡 Interview Gold Tip
+
+Say this explicitly:
+
+“Since selecting any element in a column blocks entire adjacent columns, 
+I can reduce the problem to choosing columns, turning it into a House Robber problem.”
+
+5] Maximum product sum
+
+Unlike sum:
+Product with negative numbers flips sign
+A small negative can become a big positive
+👉 Example:-2 × 3 × -4 = 24
+So Minimum can become maximum ❗
+
+At every index, track two things:
+maxEndingHere  → maximum product ending at i
+minEndingHere  → minimum product ending at i
+Why?
+max * negative → min
+min * negative → max
+
+🧠 Pattern Recognition
+
+Whenever you see:
+“product”
+“subarray”
+“negative numbers involved”
+👉 Think:Track both max and min
+
+6] Longest balanced substring (only different types of paranthesis)
+open -> 0
+closed -> 
+i-1 is open dp[i-2]+2
+i-1 is closed and dp[i-1]!=0 => x=dp[i-1] then dp[i-1]+2+dp[i-1-x-1]
+i-1 is closed and dp[i-1]==0 => 2
+
+7] Maximum sum value -> A[i]*B + A[j]*C + A[k]*D
+
+max_b=max(max_b,A[i]*B)
+max_c=max(max_c,max_b+A[i]*C)
+max_d=max(max_d,max_c+A[i]*D)
+
+“I break the expression into stages and maintain running maximums to respect the ordering constraint.”
+

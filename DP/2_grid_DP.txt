@@ -1,0 +1,309 @@
+1] Unique paths in grid (Unique Paths with Obstacles)
+You can only move:
+Right → (x, y+1)
+Down → (x+1, y)
+
+So for any cell (i, j): ways[i][j] = ways[i-1][j] + ways[i][j-1]
+BUT If there's an obstacle → ways[i][j] = 0
+⚠️ Edge Cases
+If start (1,1) is blocked → answer = 0
+If end (n,m) is blocked → answer = 0
+
+if grid[i][j] == 1:
+    dp[i][j] = 0
+else:
+    dp[i][j] = dp[i-1][j] + dp[i][j-1]
+
+We only need previous row → use 1D DP:
+
+def uniquePathsWithObstacles(grid):
+    n = len(grid)
+    m = len(grid[0])
+    
+    dp = [0] * m
+    dp[0] = 1 if grid[0][0] == 0 else 0
+    
+    for i in range(n):
+        for j in range(m):
+            if grid[i][j] == 1:
+                dp[j] = 0
+            else:
+                if j > 0:
+                    dp[j] += dp[j-1]
+    
+    return dp[m-1]
+
+Time: O(n * m)
+Space:O(m) (optimized)
+
+📦 What does dp[j] represent?
+At any moment:
+Before update → dp[j] = ways from top
+After update → dp[j] = ways to reach current cell
+
+🧩 Pattern Recognition (important for your prep)
+
+This belongs to:
+Grid DP
+Path counting problems
+
+Same pattern as:
+Unique Paths
+Minimum Path Sum (just replace sum → min)
+
+2] Dungeon Princess
+“Minimum health needed to ENTER each cell so I can reach the end safely?”
+Reverse DP (start from destination)
+Let dp[i][j] = minimum health required to ENTER cell (i,j)
+
+🧮 Transition
+
+At cell (i,j) you can go:
+Right → (i, j+1)
+Down → (i+1, j)
+
+So you need min_health_needed_after = min(dp[i][j+1], dp[i+1][j])
+Then dp[i][j] = max(1, min_health_needed_after - grid[i][j])
+💡 Why max(1, …)? Because health should NEVER go below 1
+
+🎯 Base Case
+At destination (n-1, m-1):
+dp[n-1][m-1] = max(1, 1 - grid[n-1][m-1])
+
+def calculateMinimumHP(grid):
+    n, m = len(grid), len(grid[0])
+    
+    dp = [float('inf')] * (m + 1)
+    dp[m-1] = 1
+    
+    for i in range(n-1, -1, -1):
+        for j in range(m-1, -1, -1):
+            need = min(dp[j], dp[j+1]) - grid[i][j]
+            dp[j] = max(1, need)
+    
+    return dp[0]
+
+Problem Type	Direction	Meaning of DP
+Unique Paths	Forward	     Ways to reach
+Min Path Sum	Forward	      Cost so far
+Dungeon Princess Reverse	Health needed to survive
+🧩 Pattern Recognition
+
+This is:
+Reverse DP
+Survival constraint DP
+“Minimum initial value to satisfy constraints”
+
+🚀 Interview Gold Line
+“We solve it backward because the health required at each cell depends on the future path, not the past.”
+
+3] Min Path Sum
+dp[i][j] = grid[i][j] + min(
+    dp[i-1][j],   # from top
+    dp[i][j-1]    # from left
+)
+
+def minPathSum(grid):
+    n, m = len(grid), len(grid[0])
+    
+    dp = [0]*m
+    dp[0] = grid[0][0]
+    
+    # First row
+    for j in range(1, m):
+        dp[j] = dp[j-1] + grid[0][j]
+    
+    for i in range(1, n):
+        dp[0] += grid[i][0]   # first column
+        
+        for j in range(1, m):
+            dp[j] = grid[i][j] + min(dp[j], dp[j-1])
+    
+    return dp[m-1]
+
+4] Maximum Path in Triangle
+🧠 Key Insight
+If you go top → bottom, you don’t know future best choices.
+👉 So we use bottom-up DP (same idea as Dungeon Princess but simpler)
+
+🔄 DP Definition
+dp[i][j] = maximum sum starting from (i,j) to bottom
+
+🔁 Transition
+dp[i][j] = A[i][j] + max(dp[i+1][j], dp[i+1][j+1])
+🎯 Base Case
+Last row:dp[n-1][j] = A[n-1][j]
+
+def maxPathSumTriangle(A):
+    n = len(A)
+    
+    dp = A[-1][:]   # last row
+    
+    for i in range(n-2, -1, -1):
+        for j in range(i+1):
+            dp[j] = A[i][j] + max(dp[j], dp[j+1])
+    
+    return dp[0]
+🔍 Why 1D works
+At any step:
+dp[j] → value from down
+dp[j+1] → value from diagonal
+
+So current = A[i][j] + max(down, diagonal)
+⏱ Complexity
+Time: O(n^2)
+Space: O(n) ✅
+
+🧩 Pattern Connection (VERY IMPORTANT)
+Problem	          Direction	  Operation
+Min Path Sum	  top → bottom	min
+Triangle Max Sum  bottom → top	max
+Dungeon Princess  bottom → top	constraint
+
+🧠 Key Pattern Recognition
+👉 If transitions depend on future rows → go bottom-up
+👉 If transitions depend on past → go top-down
+
+🚀 Interview Insight
+“We process from bottom because each cell depends on the optimal choices from the next row.”
+
+⚡ The Golden Rule
+👉 DP direction = dependency direction
+If dp depends on	Traverse
+top / left (past)	top → bottom
+bottom / right (future)	bottom → top
+
+We can reframe recurrence relation and solve from top to bottom too.But
+Bottom-up → answer at dp[0][0]
+Top-down → need max(last row)
+
+Deep Insight (THIS is what interviewers like)
+“We can solve it in both directions by redefining the DP state — either as max path to reach a cell or max path starting from a cell.”
+
+5] Grid unique paths II
+“This is the standard unique paths DP with an additional condition that obstacle cells contribute zero paths, and we use modulo to handle large results.”
+
+6] Block the path
+🧠 Key Insight (IMPORTANT)
+👉 This is NOT asking:
+count paths ❌
+find shortest path ❌
+👉 It is asking:
+Minimum nodes to remove to disconnect source and destination
+
+🔥 Recognize the Pattern
+This is: Minimum Cut Problem (Node Cut)
+
+⚡ Graph Interpretation
+Think of grid as a graph:
+Each cell = node
+Edges = right / down moves
+We want Minimum number of nodes to remove so that no path exists
+
+🚨 Trick: Convert Node Cut → Edge Cut
+Classic trick:
+👉 Each cell is split into:
+(in node) → (out node)
+Edge between them has capacity:
+1 → if cell can be blocked
+∞ → for start and end (cannot block)
+
+Connections:
+From (i,j)_out → neighbors_in
+
+🎯 Now Problem Becomes
+Find minimum s-t cut in this graph
+
+Which is same as:
+👉 Max Flow problem
+
+🧠 But there is a MUCH simpler observation 👇
+Since movement is only:Right, Down
+👉 Every path moves exactly (n-1 + m-1) steps
+
+🔥 CRITICAL INSIGHT
+At any step k, all paths lie on cells where:
+i + j = k
+
+👉 These are diagonals (layers)
+💡 So what?Every path MUST pass through:
+i + j = 1, 2, 3, ..., n+m-3
+👉 If we block ALL cells in any one layer → no path exists
+
+✅ Final Answer
+👉 For each diagonal (excluding start and end):
+Count how many unblocked cells (A[i][j] == 0) exist.
+👉 Answer = minimum such count across all diagonals
+
+🧾 Code
+def minCellsToBlock(A):
+    n, m = len(A), len(A[0])
+    
+    from collections import defaultdict
+    diag = defaultdict(int)
+    
+    for i in range(n):
+        for j in range(m):
+            if (i, j) != (0, 0) and (i, j) != (n-1, m-1):
+                if A[i][j] == 0:
+                    diag[i + j] += 1
+    
+    ans = float('inf')
+    
+    for k in diag:
+        ans = min(ans, diag[k])
+    
+    return ans if ans != float('inf') else 0
+⚠️ Edge Case
+If already no path exists:
+👉 answer = 0
+(You can check using simple DP first)
+
+🧠 Why this works
+👉 Every valid path must cross each diagonal exactly once
+👉 So blocking one entire diagonal = blocking all paths
+👉 Choose diagonal with minimum cells → minimal blocking
+
+🚀 Interview Gold Insight
+“Since movement is restricted to right and down, all paths pass through layers of constant (i+j). 
+Blocking the smallest such layer disconnects source and destination.”
+
+🧩 Pattern Recognition
+Problem Type	Technique
+Count paths	     DP
+Min cost path	 DP
+Block all paths	 Cut / layers
+
+Imagine this:
+Every path from (0,0) to (n-1,m-1):
+Takes exactly (n-1 + m-1) steps
+At step k, you are always on some cell where:
+i + j = k
+
+🎯 Visualize Layers
+For a 3x3 grid:
+(0,0) → k=0
+
+k=1 → (0,1), (1,0)
+k=2 → (0,2), (1,1), (2,0)
+k=3 → (1,2), (2,1)
+k=4 → (2,2)
+
+👉 These are diagonals
+🔥 Key Realization
+Every path MUST: pick one cell from each diagonal
+👉 No skipping possible
+
+💡 So how do you block ALL paths?
+Instead of blocking random cells:
+👉 Just pick ONE diagonal
+👉 Block ALL its available cells
+💥 Done — no path survives
+
+🎯 Then what’s optimal?
+👉 Choose the diagonal with minimum free cells
+🧠 That’s it!
+
+No DP
+No recursion
+Just counting
