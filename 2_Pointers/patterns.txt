@@ -1,0 +1,134 @@
+Two Pointers — Complete Pattern Map
+
+1️⃣ Opposite Ends (Converging Pointers)
+
+Pattern
+l = 0, r = n-1
+while l < r:
+    ...
+
+When to use :
+Sorted array
+Need pair / comparison / optimization
+
+Typical Logic: Move l or r based on condition
+
+2️⃣ Same Direction (Fast & Slow Pointers)
+
+Pattern
+slow = 0
+for fast in range(n):
+    if condition:
+        slow += 1
+
+
+When to use :
+In-place modification
+Remove / compress elements
+
+3️⃣ Sliding Window (Variable Size)
+
+Pattern
+l = 0
+for r in range(n):
+    expand window
+    while window invalid:
+        shrink window
+
+When to use :
+Subarray / substring
+Maximum / minimum / count
+Condition-based window
+
+4️⃣ Fixed Size Sliding Window
+
+Pattern
+window_sum = sum(A[0:k])
+for i in range(k, n):
+    window_sum += A[i] - A[i-k]
+
+When to use :
+Exactly K length
+
+5️⃣ Three Pointers
+Pattern
+Often used after sorting
+One fixed pointer, two moving pointers
+
+6️⃣ Cycle / Floyd’s Two Pointers
+
+Pattern
+slow = A[0]
+fast = A[A[0]]
+
+When to use :
+Detect cycles
+Duplicate number
+
+7️⃣ Partition / Rearrangement Pointers
+Pattern - Separate elements based on condition
+
+8️⃣ Merge-style Two Pointers
+Pattern
+i, j = 0, 0
+while i < n and j < m:
+    ...
+
+When to use
+Two sorted arrays
+
+9️⃣ Backward + Forward Pointers
+
+Pattern
+One pointer moves forward
+One backward
+
+Problems
+Valid palindrome with deletion
+
+How to Identify Two Pointers Quickly ⚡
+
+Is the array sorted?
+Do I need a pair / subarray / window?
+Can I avoid nested loops?
+Can I reuse previous work?
+
+If yes → two pointers likely apply
+
+1] 3 sum = Fix one pointer + 2 sum
+
+2] No of subsets that includes A[r] = r-l+1
+
+3]  Closest pair from sorted arrays A and B
+left = 0
+right = len(B)-1
+
+Moving i → increases sum
+Moving j → decreases sum
+This gives you full control over the sum with one step.
+
+In a grid:
+Top-right corner = smallest A + largest B
+
+Starting there allows:
+move left → reduce sum
+move down → increase sum
+
+If you need to increase and decrease something using pointers, start from opposite ends.
+
+4] max(|x - y|, |y - z|, |z - x|) = max(x, y, z) - min(x, y, z)
+Minimize max(A[i], B[j], C[k]) - min(A[i], B[j], C[k])
+
+To reduce the difference:
+You must increase the minimum
+Decreasing the maximum is not possible because arrays are sorted increasing
+
+SO all pointers set to 0 initially.
+
+Key property we rely on in two-pointer problems:
+Each pointer move must permanently discard a set of impossible optimal solutions
+
+Minimum is as small as possible
+Increasing min is monotonic
+Each pointer only moves forward
+No configuration is skipped

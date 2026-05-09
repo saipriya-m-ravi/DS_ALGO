@@ -1,0 +1,82 @@
+1] Absolute difference
+∣A[i]−A[j]∣+∣i−j∣ = 
+
+(A[i] + i) - (A[j] + j)  -> resolves to form A[i]+i
+(A[i]−i)−(A[j]−j)   -> resolves to form A[i]-i
+
+|A[i] - A[j]| + |i - j|
+Think: “Can I merge index and value into one expression?”
+
+2] rain water trapped
+water[i]=min(leftMax,rightMax)−height[i]
+
+3] Maximum sum contigous subarray
+
+    maxSum = A[0]
+    currSum = 0
+
+    for num in A:
+        currSum = max(num, currSum + num)
+        maxSum = max(maxSum, currSum)
+
+4] Search in a row wise and column wise sorted matrix
+
+Start at (row = 0, col = m-1)
+
+While inside bounds:
+If matrix[row][col] == target → found
+If matrix[row][col] > target → move left
+If matrix[row][col] < target → move down
+
+Start from Top Right.
+
+5] First missing integer
+
+The smallest missing positive must lie between 1 and N+1, so I can ignore other values.
+I use the array itself to mark presence by placing each number x at index x−1.
+After rearranging, the first index where A[i] != i+1 gives the answer.
+
+When you see:
+
+“Missing”
+“Range 1 to N”
+“O(1) space”
+
+Automatically think: Index mapping / in-place hashing
+
+While A[i] is in range and not already in correct place swap A[i] with A[A[i]-1]
+
+6] Prefix sum for submatrices:
+
+prefix[i][j] = A[i][j]
+             + prefix[i-1][j]
+             + prefix[i][j-1]
+             - prefix[i-1][j-1]
+
+    prefix = [[0]*m for _ in range(n)]
+
+    for i in range(n):
+        for j in range(m):
+            prefix[i][j] = A[i][j]
+            if i > 0:
+                prefix[i][j] += prefix[i-1][j]
+            if j > 0:
+                prefix[i][j] += prefix[i][j-1]
+            if i > 0 and j > 0:
+                prefix[i][j] -= prefix[i-1][j-1]
+
+7] SUm of all submatrices
+sum+=(A[i][j]*(i+1)*(j+1)*(m-i)*(m-j))
+
+8] Medians = (n*m)//2 , (n*m)//2 -1
+
+9] Max chunks to make it sorted
+right_min_elem[i+1]>=left_max_elem[i] -> chunks += 1
+
+10] Merge Intervals
+
+-> Sort by start time
+intervals.sort(key=lambda x: x[0])
+
+-> Two intervals overlap if:
+current.start <= last.end

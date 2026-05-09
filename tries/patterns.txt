@@ -1,0 +1,49 @@
+Tries are for prefix-based searching.
+
+Used when:
+Dictionary
+Prefix matching
+Auto-complete
+Word search
+Bitwise XOR problems
+
+🔵 1️⃣ Basic Trie Structure
+
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.isEnd = False
+
+Insert:
+
+for char in word:
+    if char not in node.children:
+        node.children[char] = TrieNode()
+    node = node.children[char]
+node.isEnd = True
+
+🔥 Pattern 1: Prefix Search
+
+Used in:
+Implement Trie
+Search suggestions system
+
+🔥 Pattern 2: Word Search II (Trie + DFS)
+
+Used in:
+Board search
+Multiple word matching
+Build trie → DFS on grid.
+Major pruning optimization.
+
+🔥 Pattern 3: XOR Maximum Pair (Bitwise Trie)
+
+Store bits (0/1) in trie.
+
+Used in:
+Maximum XOR of two numbers
+Subarray XOR problems
+
+🔥 Pattern 4: Count Words with Prefix
+
+Maintain count at each node.

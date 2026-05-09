@@ -1,0 +1,120 @@
+1] Interval Scheduling / Activity Selection
+Choose maximum non-overlapping intervals
+
+Problems look like:
+meetings, jobs, tasks, ranges, segments
+
+Standard greedy rule :
+Sort by ending time
+Pick earliest finishing interval
+
+2] Minimum Number of Resources (Rooms / Platforms)
+Opposite of scheduling
+Instead of picking non-overlapping, we count overlapping.
+
+Trick:
+Sort start times and end times separately
+Use two pointers
+
+
+3] Jump Game / Reachability Greedy
+Decide reachability with local best extension.
+
+Problems:
+Jump Game
+Minimum jumps
+Reach end
+
+Idea:
+Track farthest reachable index
+
+4] Greedy with Sorting + Local Best Choice
+
+Examples:
+Assign cookies
+Boats to save people
+Minimum arrows to burst balloons
+Gas station circular tour
+
+Core structure:
+Sort something
+Pick best candidate locally
+
+5] Fractional Knapsack Type
+choose best value per unit
+
+Rule:
+Sort by value / weight descending
+Take as much as possible
+Only works when fractional allowed.
+
+6] Huffman Coding / Merge Cost Problems
+repeatedly combine smallest elements.
+
+Recognize by:
+
+minimize total merge cost
+repeatedly combine 2 smallest
+ropes / files merging
+
+Solution:
+Min heap
+Always combine two smallest
+
+8] Greedy String Construction
+Examples:
+Remove duplicate letters smallest lexicographic
+Reorganize string
+Partition labels
+
+Often uses:
+last occurrence tracking
+frequency tracking
+stack
+
+-> HOW TO IDENTIFY GREEDY PROBLEMS
+
+✅ Sign 1 — Problem asks for
+minimum number
+maximum number
+optimal selection
+smallest cost
+
+✅ Sign 2 — Local best choice seems obvious
+
+Ask:
+If I make best choice now, can it hurt later? If NO → greedy possible.
+
+✅ Sign 3 — Sorting unlocks solution
+
+If sorting reveals simple linear solution, HIGH chance greedy.
+
+✅ Sign 4 — You don't need to reconsider past decisions
+
+Greedy works when once chosen → never regret
+
+-> To minimize total movement in 1D:
+Always align people around the median person
+This is a universal greedy rule:
+Minimum sum of absolute distances → median
+
+-> Seating Problem
+pos[mid] → stays
+left people fill consecutive seats left
+right people fill consecutive seats right
+
+-> Distribute candy
+two-direction dependency problem. leftand right side imposes constraints
+Candy is actually a Slope / mountain greedy problem
+
+-> If problem says:
+
+✅ two sets
+✅ one-to-one matching
+✅ minimize maximum difference
+✅ linear positions
+
+Think: Sort both and match in order
+
+-> greedy + sliding window flip problem : You can flip exactly B consecutive bits. Make all 1. Return miniumum no of flips.
+

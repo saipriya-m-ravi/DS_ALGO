@@ -1,0 +1,207 @@
+🟢 1. Frequency / Counting Pattern (VERY COMMON)
+🔎 Recognition clues
+anagram
+permutation
+rearrange string
+character count
+palindrome possible?
+
+👉 Use:
+hashmap / array[26] / Counter
+🔥 Example problems
+Valid anagram
+Group anagrams
+Ransom note
+First unique character
+
+🟢 2. Two Pointer String Pattern
+🔎 Recognition clues
+reverse string
+palindrome check
+compare from both ends
+ignore special characters
+
+🔥 Example problems
+Valid palindrome
+Reverse words in string
+Longest palindrome by deletion
+
+🟢 3. Sliding Window (MOST IMPORTANT STRING PATTERN)
+⭐ This alone covers 30% of string interview questions.
+🔎 Recognition clues
+substring
+longest substring
+smallest substring
+at most K distinct
+no repeating characters
+
+🧠 Template idea
+expand right pointer
+shrink left when invalid
+🔥 Core problems (MUST MASTER)
+Longest substring without repeating characters ⭐
+Minimum window substring ⭐⭐⭐
+Longest repeating replacement
+Permutation in string
+
+🟢 4. Palindrome Expansion Pattern
+🔎 Recognition clues
+palindromic substring
+longest palindrome
+count palindromes
+
+🧠 Trick
+For each index:
+expand left and right
+🔥 Example problems
+Longest palindromic substring ⭐
+Count palindromic substrings
+
+🟡 5. KMP / Pattern Matching Algorithms
+(Important for strong companies)
+
+🔎 Recognition clues
+find pattern in text
+repeated substring search
+string matching efficiently
+
+Algorithms:
+KMP ⭐
+Z-algorithm
+Rabin-Karp
+
+Use when:
+Need faster than O(N*M)
+
+🟡 6. Trie-Based String Pattern
+🔎 Recognition clues
+dictionary search
+prefix queries
+autocomplete
+word search
+
+🔥 Example problems
+Implement Trie ⭐
+Word search II ⭐⭐⭐
+Replace words
+
+🟡 7. Stack-Based String Problems
+🔎 Recognition clues
+
+remove adjacent duplicates
+valid parentheses
+decode string
+simplify path
+
+🔥 Example problems
+Valid parentheses ⭐
+Remove duplicates string
+Decode string ⭐⭐
+
+🔴 8. Rolling Hash / Substring Hashing (ADVANCED)
+
+Used for:
+repeated substring detection
+longest duplicate substring
+plagiarism detection
+
+Algorithm:
+Rabin-Karp hashing
+
+Important in top-tier interviews.
+
+🔴 9. DP on Strings (VERY IMPORTANT)
+🔎 Recognition clues
+edit distance
+longest common subsequence
+palindrome partitioning
+subsequence counting
+
+🔥 Core problems
+Edit distance ⭐⭐⭐
+Longest common subsequence ⭐⭐
+Distinct subsequences
+Word break ⭐⭐⭐
+
+🔴 10. Backtracking on Strings
+🔎 Recognition clues
+generate permutations
+split string into valid parts
+palindrome partitioning
+
+🔥 Example problems
+Letter combinations phone number
+Restore IP addresses
+Palindrome partitioning
+
+-> If problem says:
+
+✔ cyclic shifts
+✔ rotations
+✔ matching strings
+
+Immediately think: string + string trick
+
+-> A[i] = A[i % k]   for all i means the string is built by repeating the first k characters.
+
+->  “How do you find smallest repeating block?”
+Build LPS array and compute N - LPS[N-1].
+
+Whenever you see:
+
+✅ repeating substring
+✅ smallest pattern
+✅ string constructed by repetition
+✅ periodic string
+
+Immediately think: ⭐ KMP LPS
+
+Period = length − longest prefix which is also suffix
+
+-> Make string palindrome
+We want the longest prefix of A that is already a palindrome
+answer = N - (length of longest palindromic prefix)
+
+How to find longest palindromic prefix FAST? 
+1. Build string S = A + "#" + reverse(A)
+2. Then compute:
+👉 LPS array (KMP prefix function)
+The last value of LPS =
+⭐ longest prefix of A matching reversed suffix
+⭐ i.e. longest palindromic prefix
+
+-> Whenever you see:
+
+✅ insert only at front
+✅ insert only at back
+✅ minimum chars to make palindrome
+
+Immediately think:
+
+⭐ KMP with A + '#' + reverse(A)
+
+-> Z[i] = length of longest substring starting at i
+which matches prefix of string.
+
+	          LPS	               Z
+Meaning	prefix==suffix	prefix match from position
+Used in	KMP search	pattern finding / substring tricks
+Direction	looks backward	looks forward
+Intuition difficulty	harder initially	easier conceptually
+
+✅ Use LPS when problem says:
+
+prefix & suffix
+periodic string
+repeating substring
+minimum insertions palindrome
+KMP pattern search
+
+✅ Use Z-algorithm when problem says:
+
+find pattern in string
+count substring matches
+find longest prefix matches at every index
+string compression
+pattern + "$" + text trick
+

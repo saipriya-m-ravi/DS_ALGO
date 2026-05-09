@@ -1,0 +1,198 @@
+-> Recursion is
+State + Choice + Base Case
+
+Every recursion problem reduces to:
+What is my state?
+What choices do I have?
+When do I stop?
+
+-> Recursion template
+
+def dfs(state):
+    if base_case:
+        process_answer()
+        return
+    
+    for choice in available_choices:
+        make_choice
+        dfs(new_state)
+        undo_choice   # only in backtracking
+
+-> CORE RECURSION PATTERNS
+
+🟢 1️⃣ Take / Not Take Pattern (Subsequence Pattern)
+Used In:
+Subsets
+Subsequences
+Count subsets
+Target sum
+Partition problems
+
+Structure:
+def solve(i):
+    if i == n:
+        return
+
+    # take
+    solve(i+1)
+
+    # not take
+    solve(i+1)
+
+Think binary decision tree. Time complexity: O(2^N)
+
+🟢 2️⃣ Permutation Pattern
+Used In:
+Permutations
+N-Queens
+Word arrangements
+
+Trick:
+Use visited array or swap technique.
+
+for i in range(n):
+    if not used[i]:
+        used[i] = True
+        dfs(...)
+        used[i] = False
+
+Time: O(N!)
+
+🟢 3️⃣ Combination Pattern (Choose k out of n)
+Used In:
+Combination sum
+k-combinations
+Phone keypad
+
+for i in range(start, n):
+    pick i
+    dfs(i+1)
+    unpick i
+
+Notice:
+We move forward only → avoid duplicates.
+
+🟢 4️⃣ Backtracking with Constraint Checking
+Used In:
+N-Queens
+Sudoku
+Word search
+Graph coloring
+
+Pattern:
+if not valid(choice):
+    continue
+This is pruning.
+
+🟢 5️⃣ Partitioning Pattern
+Used In:
+Palindrome partitioning
+Expression add operators
+Restore IP addresses
+
+Structure:
+
+for end in range(start, n):
+    if valid(start, end):
+        dfs(end+1)
+
+🟢 6️⃣ Grid / Graph DFS Pattern
+Used In:
+Number of islands
+Word search
+Maze problems
+
+for dx, dy in directions:
+    if valid cell:
+        dfs(next_cell)
+
+🟢 7️⃣ Backtracking with Counting (Return value recursion)
+
+Instead of storing answers: return take + not_take
+
+Used in:
+Count subsets
+Target sum
+Unique paths
+
+🟣 PART 3: BACKTRACKING OPTIMIZATION TRICKS
+
+🔥 Trick 1: Pruning Early
+
+Instead of exploring full tree:
+if current_sum > target:
+    return
+Massive speed improvement.
+
+🔥 Trick 2: Sort First
+
+Used in:
+Combination Sum II
+Subsets with duplicates
+
+After sorting:
+if i > start and nums[i] == nums[i-1]:
+    continue
+Prevents duplicates.
+
+🔥 Trick 4: Memoization (Convert to DP)
+
+If overlapping subproblems:
+memo[(state)] = result
+Reduces exponential to polynomial.
+
+🔥 Trick 5: Think in Tree Shape
+
+Always imagine recursion tree:
+Height?
+Branching factor?
+Time complexity ≈ (branching factor) ^ (depth)
+
+🎯 PART 4: HOW TO IDENTIFY BACKTRACKING
+
+If problem says:
+Print all possibilities
+Generate all combinations
+Count all ways
+Explore all paths
+Constraint satisfaction
+Then it's backtracking.
+
+-> Generate all paranthesis
+
+We never use more than n '('
+We never use more than n ')'
+
+At any time:
+number of ')' <= number of '('
+
+otherwise it becomes invalid
+
+-> Combination Sum
+
+Backtracking + Choose / Not Choose
+With unlimited reuse of same element
+
+At each index i you have 2 conceptual choices:
+Take it (stay at same index because unlimited use)
+Skip it (move to next index)
+
+->N Queens time complexity
+Worst case: O(N!)
+
+At row 0 → N choices
+Row 1 → N-1 choices
+Row 2 → N-2 choices
+
+That’s permutation-like behavior:
+N × (N-1) × (N-2) × ... ≈ N!
+
+-> Backtracking on Grid
+
+⏱ Time Complexity
+Worst case:
+O(4^(N*M))
+
+Because from each cell → 4 directions. In worst case we explore all permutations of cells
+More precisely O(3^K)
+Where K = number of non-obstacle cells

@@ -1,0 +1,226 @@
+1] Graph reachability - Path exists, Can reach destination, Connectivity check (directed) - BFS/DFS
+   
+   O(V+E) - TC
+   The space complexity is O(V + E) due to the adjacency list, visited array, and BFS queue/DFS stack.
+
+2] Grid graph problem - Connected Components in a Grid - use dfs/BFS
+
+No need to use a separate visited set. Mutation done in matrix itself.
+TC = O(M*N)  --> every cell is visited only once
+SC = O(M*N)  --> worst case recursion stack size
+
+3] Multi-Source BFS with Levels - 
+If “time” or “spread” is involved → think BFS, not DFS.
+
+4] Grid Discretization + BFS (Geometry to Graph) - Valid path in a rectangle without touching circles.
+I discretize the continuous plane into a grid, block all points covered by any circle using distance checks, and run BFS to check reachability
+TC = O(A*B)
+Sc = O(A*B)
+
+5] Clone graph - Any deep copy of cyclic structure → hashmap + traversal.
+clone the parent first then neighbours
+In graph cloning, the clone map is the visited set.
+
+6] Surrounded regions - Capture regions on board
+Pattern - Reverse Thinking + Boundary Flood Fill
+It is easier to mark what cannot be captured than what can.
+| Question                       | If Yes → This Pattern |
+| ------------------------------ | --------------------- |
+| Flipping regions conditionally | ✅                     |
+| Border plays special role      | ✅                     |
+| Grid with connectivity         | ✅                     |
+| "Surrounded" mentioned         | ✅                     |
+
+1. Traverse all border cells
+2. BFS/DFS from border 'O's
+3. Mark all reachable 'O's as SAFE ('#')
+4. Flip remaining 'O's to 'X'
+5. Restore SAFE ('#') cells back to 'O'
+
+Pattern Summary (Memorize)
+Aspect	Pattern
+Thinking	Reverse
+Traversal	Boundary flood fill
+Graph	Grid (implicit)
+Adjacency	4-direction
+Final Takeaway
+
+If a problem says “surrounded”, start from the boundary.
+
+Always Ask These 3 Questions
+
+For every graph/grid problem:
+
+What is guaranteed safe?
+What is guaranteed invalid?
+Can I mark one group and infer the rest?
+
+They ask one killer question - “Which nodes can NEVER be part of the answer?”
+The Mental Trick (Memorize This) - When asked to find “bad” regions, first find the “good” ones.
+
+Step 1️⃣ Ask: What makes a region NOT surrounded?
+This is the critical flip.
+Answer:
+If it touches the border, it cannot be surrounded.
+
+Step 2️⃣ Ask: Which cells are guaranteed safe?
+Border 'O'
+Any 'O' connected to border 'O'
+
+Now the problem becomes - “Mark all safe cells”
+
+7] Batches - Disjoint Set Union (Union-Find) with Component Aggregation
+If the problem says “if A knows B and B knows C, then A knows C” → DSU.
+
+“Since ‘knowing each other’ is transitive, this forms connected components. I use Union-Find to group students, sum strengths per component, and count those meeting the threshold.”
+7️⃣ Why DSU Is Better Than DFS Here
+DFS/BFS	DSU
+Need adjacency list	No graph needed
+Repeated traversal	Single pass
+Harder aggregation	Natural
+Less scalable	Efficient
+
+How to Identify This Pattern Quickly
+
+Ask yourself:
+
+Question	If Yes → DSU
+Relationship is transitive	✅
+Need to group items	✅
+Queries about groups	✅
+Graph traversal unnecessary	✅
+
+Core Reason:
+
+We don’t care about traversal — we only care about grouping.
+
+What traversal gives you:
+Visit order
+Path structure
+Neighbor relationships
+
+What this problem asks:
+Which students belong to the same group
+Sum per group
+
+DSU answers: - “Are x and y in the same connected component?”
+That’s precisely the requirement.
+
+“Traversal is unnecessary because we don’t need to explore the graph structure, only to merge connected components.”
+
+DSU answers “who belongs together”
+DFS/BFS answers “how they are connected”
+
+If “how” matters → traversal
+If only “who” matters → DSU
+
+8] Edges in MST - Kruskal + DSU + Group-by-weight
+Algorithm Outline
+
+Sort edges by weight
+Process edges grouped by same weight
+For each group:
+First, check eligibility (without union)
+Then, union all eligible edges
+
+If an edge is blocked after Phase 2, then it is blocked in ALL MSTs — no alternative equal-weight choice can save it.
+
+Does there exist at least ONE MST that contains e?
+“This edge is NOT forbidden by smaller-weight edges”
+Equal-weight edges must not block each other.
+“Validity is checked against smaller edges only — not against choices we make among equals.”
+
+9] Kruskal and Prims
+
+Rule of Thumb (Memorize This)
+Situation	Choose
+Graph given as edge list	Kruskal
+Graph given as adjacency list / matrix	Prim’s
+Graph is dense (E ≈ V²)	Prim’s
+Need to grow MST from a source	Prim’s
+Online / streaming edges	Prim’s
+
+Kruskal:
+
+Looks at edges globally
+Needs sorting all edges
+
+Prim’s:
+
+Grows MST locally
+Expands from an arbitrary node
+Never sorts all edges at once
+
+Kruskal = Edge-centric
+Prim = Vertex-centric
+
+both has tc = O(ElogV) , sc = O(V+E)
+
+10] Cycle in directed graph - visited + recursion stack
+A cycle exists if we reach a node that is already in the current DFS path.
+If neighbor is visited AND in recursion stack → cycle
+
+11] Cycle in undirected graph - visited + not parent
+In an undirected graph, a cycle exists if during DFS we visit an already visited node that is not the parent.
+
+12] “Minimum threshold to connect all nodes” - kruskal
+
+How to Identify Similar Problems. Look for phrases like:
+
+“minimum K such that…”
+“path exists between all pairs”
+“maximum edge on path minimized”
+“connectivity under constraint”
+
+13] Topological sorting - Kahn's algo or DFS
+
+“lexicographically smallest topological order”
+“any valid ordering, but smallest preferred”
+“dependency resolution with priority”
+
+→ Immediate answer: Kahn’s algorithm with min heap . minheap is used for lexicographical order. otherwise we can use queue.
+
+cycle detection - len(topological ordering)<A
+
+In DFS topological sort, a node is added to the order only after all its descendants are processed.
+
+14] Dijkstra
+
+Dijkstra = greedy + priority queue
+Non-negative weights only
+Heap version is interview standard
+
+15] Bipartite
+A graph is bipartite ⇔ it has NO odd-length cycle
+
+16] Things to remember:
+
+For undirected graph, add both way edges to adjacency list
+If nodes start from 1 subtract 1 from node labels and create adj list
+Use for loop not to miss out on disconnected components
+
+17] Floyd-Warshall -> All pair shortest path Problems
+Can going through k improve the path from i to j?
+TC = O(A*3) , SC = O(A*2)
+
+18] Minimum Weighted Cycle - Edge removal+shortest path
+Any cycle can be seen as a shortest path between two vertices plus the final edge that closes the loop. 
+By trying each edge as the closing edge and computing the shortest alternate path, we guarantee finding the minimum cycle.
+
+19] MST with Pre-connected Components - eg: Road Construction
+
+Look for phrases like:
+“some connections already exist”
+“add minimum cost edges to connect everything”
+“roads/pipes already built”
+“minimum cost to make graph connected”
+
+First union all already-connected towns. Then run Kruskal on remaining edges
+
+“Since some roads already exist for free, I treat those towns as pre-connected components. 
+Then I run Kruskal’s algorithm on all possible roads using squared Euclidean distance to find the minimum cost to connect remaining components.”
+
+20] Alien Dictionary - Topological sorting
+“I derive character ordering constraints by comparing adjacent words, build a directed graph, and perform topological sorting. 
+If a cycle or prefix violation exists, the ordering is invalid.”
+

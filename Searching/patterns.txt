@@ -1,0 +1,229 @@
+🟢 1️⃣ LINEAR SEARCH PATTERNS (O(N))
+
+🔹 Pattern 1: Hashing Based Search
+
+When to use?
+Need to check existence quickly
+Need frequency
+Need complement
+Two-sum type problems
+
+Always ask:
+Can I convert O(N²) pair checking into O(N) using a hashmap?
+
+🔹 Pattern 2: Two Pointers (Sorted Search)
+
+When to use?
+Sorted array
+Need pair/triplet
+Opposite direction shrinking window
+
+Trick:
+If array is sorted and you are checking pairs think two pointers before anything else.
+
+🔵 2️⃣ BINARY SEARCH
+Binary search is not about “finding element”. It is about searching in a monotonic search space
+
+🧠 HOW TO IDENTIFY BINARY SEARCH?
+Ask these 3 questions:
+Is search space sorted?
+Is answer monotonic?
+Can I eliminate half each time?
+If YES → Binary search likely.
+
+🔷 BINARY SEARCH PATTERNS
+🔹 Pattern 1: Classic Binary Search
+Search element in sorted array.
+while (low <= high)
+
+🔹 Pattern 2: Lower Bound / Upper Bound Pattern
+
+Use when:
+First occurrence
+Last occurrence
+Smallest >= target
+Largest <= target
+
+Template (lower bound):
+
+while (low < high)
+    mid = low + (high - low)/2
+    if (arr[mid] >= target)
+        high = mid
+    else
+        low = mid + 1
+
+🔹 Pattern 3: Binary Search on Answer
+When:
+You are NOT searching element.
+You are searching minimum/maximum possible value.
+Condition is monotonic.
+
+How to detect? Problem looks like:
+Minimum X such that condition true
+Maximum X such that condition true
+Minimize the maximum
+Maximize the minimum
+If you see this language → 90% binary search on answer.
+
+Structure:
+low = minimum possible answer
+high = maximum possible answer
+
+while (low <= high)
+    mid = ...
+    if (isPossible(mid))
+        high = mid - 1   // minimize
+    else
+        low = mid + 1
+Key Trick:
+Write separate function: bool isPossible(mid)
+That makes thinking clean.
+
+🔹 Pattern 4: Binary Search in Rotated Sorted Array
+Identify:
+Sorted but rotated
+One half always sorted
+
+Classic:
+Search in rotated array
+Find minimum in rotated array
+
+Core Trick:
+At any mid: One side is guaranteed sorted.
+Check which side is sorted and move accordingly.
+
+🔹 Pattern 5: Binary Search in 2D Matrix
+
+Cases:
+Matrix sorted row-wise & row start > previous row end → Treat as 1D array
+
+Row-wise sorted only → Binary search row + binary search column
+
+🔹 Pattern 6: Peak Element Problems
+
+When:
+Need local maxima/minima
+Adjacent comparison
+
+Example:
+Find peak element
+Mountain array peak
+
+Key idea:
+Compare mid and mid+1
+
+
+⚡ Trick 1: Always Define Search Space First
+
+Before coding ask:
+What is low?
+What is high?
+What am I searching?
+
+⚡ Trick 2: Avoid Infinite Loop. Use consistent template.
+
+Two popular templates:
+
+Template A
+while (low <= high)
+Template B
+while (low < high)
+
+Do NOT mix logic randomly.
+
+⚡ Trick 4: For Minimization vs Maximization
+
+If minimizing:
+if (possible) high = mid - 1
+
+If maximizing:
+if (possible) low = mid + 1
+
+🏁 MASTER CHECKLIST BEFORE CODING
+Is it sorted?
+Is answer monotonic?
+Can I eliminate half?
+Is it min/max type?
+Can I write isPossible(mid)?
+If yes → binary search.
+
+
+-> while (low <= high) and while (low < high)
+
+It depends on:
+Are you searching for an exact value?
+Or narrowing down to a boundary?
+Do you want the loop to end with 1 element or 0 elements?
+
+🔵 1️⃣ while (low <= high)
+👉 Use when searching for an exact element
+
+When to use:
+Search for target
+Find if element exists
+First/last occurrence (index-based)
+General search where mid could be the answer and you return immediately
+
+Template:
+while (low <= high):
+    mid = low + (high - low) // 2
+
+    if arr[mid] == target:
+        return mid
+    elif arr[mid] < target:
+        low = mid + 1
+    else:
+        high = mid - 1
+
+When low == high, that element might be the answer. You still need to check it. So loop must run one last time.
+If you used <, you'd skip checking the last element.
+
+Mental Model
+Search space = [low, high] (both inclusive)
+
+We remove mid completely each iteration:
+low = mid + 1
+high = mid - 1
+
+Eventually:
+low = high + 1
+
+Loop stops.
+
+🟢 2️⃣ while (low < high)
+👉 Use when shrinking search space to 1 element. This is used in boundary problems:
+Lower bound
+Upper bound
+First true / Last false
+Minimum valid value
+Binary search on answer
+
+Template (Lower Bound style)
+while (low < high):
+    mid = low + (high - low) // 2
+
+    if condition(mid):
+        high = mid
+    else:
+        low = mid + 1
+
+Notice we keep mid in search space.
+
+We are shrinking range to 1 element.
+When low == high, that is the answer.
+No need to check again.
+Loop ends naturally.
+
+🔥 KEY DIFFERENCE
+Type	           Loop	     How we shrink	     When it ends
+Exact search	low <= high	 Remove mid (±1)	When space empty
+Boundary search	low < high	 Keep mid	        When 1 element left
+
+🧠 Intuition Trick
+
+❓ Are we eliminating mid completely? If YES → use <=
+Because you're removing it using mid ± 1.
+
+❓ Are we keeping mid in range? If YES → use <
+Because you are narrowing until one candidate remains.

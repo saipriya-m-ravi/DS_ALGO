@@ -1,0 +1,500 @@
+-> Every tree problem reduces to one of 3 things:
+
+1. DFS (recursion)
+2. BFS (level order)
+3. Structural transformation
+
+🔥 Pattern 1: Postorder = Bottom-Up Computation (left-right-root)
+
+If answer depends on children use postorder.
+Height
+Diameter
+Balanced tree
+Maximum path sum
+Validate subtree
+
+Template:
+
+def dfs(node):
+    if not node:
+        return base_value
+
+    left = dfs(node.left)
+    right = dfs(node.right)
+
+    return combine(left, right)
+
+Classic Problems:
+Height of tree
+Diameter
+Balanced Binary Tree
+Maximum Path Sum
+Same Tree
+Subtree of another tree
+
+🔥 Pattern 2: Preorder = Build / Path Problems (root-left-right)
+
+Used when you build something
+Track path
+Serialize tree
+Root-to-leaf problems
+
+Example:
+
+def dfs(node, path):
+    if not node:
+        return
+
+    path.append(node.val)
+
+    if leaf:
+        process(path)
+
+    dfs(node.left, path)
+    dfs(node.right, path)
+
+    path.pop()
+
+Used in:
+Root to leaf paths
+Path sum
+Flatten tree
+Serialize/deserialize
+
+🔥 Pattern 3: Inorder = BST Related (left-root-right)
+
+In BST:
+Inorder traversal gives sorted order.
+
+Used in:
+Validate BST
+Kth smallest
+Convert BST to sorted list
+
+🟢 2️⃣ BFS PATTERNS (Level Order)
+
+Use queue.
+
+Template:
+
+from collections import deque
+queue = deque([root])
+
+while queue:
+    size = len(queue)
+
+    for _ in range(size):
+        node = queue.popleft()
+        process(node)
+
+        if node.left:
+            queue.append(node.left)
+        if node.right:
+            queue.append(node.right)
+Used in:
+Level order traversal
+Right side view
+Zigzag traversal
+Minimum depth
+Burn tree
+Shortest path in tree
+
+🟡 3️⃣ TREE DP PATTERN
+
+When node returns multiple values. 
+
+Example: Diameter
+return (height, diameter)
+
+🟣 4️⃣ LCA (Lowest Common Ancestor)
+
+Two approaches:
+
+For general tree Postorder recursion.
+For BST Use property.
+
+🎯 HIGH-VALUE TREE INTERVIEW TRICKS
+⚡ Trick 1: Height Based Thinking
+
+If problem mentions:
+Balanced
+Diameter
+Longest path
+Think postorder.
+
+⚡ Trick 2: Convert Global Variable to Return Value
+
+Avoid globals. Instead return multiple values. Cleaner and more interview-friendly.
+
+⚡ Trick 3: Use Sentinel Values
+
+For invalid subtree:
+return -inf
+
+Used in:
+Maximum path sum
+Validate BST
+
+⚡ Trick 4: For Path Problems
+
+Use backtracking.
+Append → recurse → pop.
+
+⚡ Trick 5: Complexity Awareness
+Structure       Average     Worst
+Binary Tree	      O(N)	    O(N)
+BST	            O(log N)	O(N)
+Balanced BST	O(log N)	O(log N)
+Trie	            O(L)	O(L)
+Where L = word length.
+
+🏆 MASTER CHECKLIST
+
+Before coding tree problem:
+Is it DFS or BFS?
+Bottom-up or top-down?
+Do I need multiple values from children?
+Is it BST property?
+Is it prefix-based (Trie)?
+
+-> To avoid slicing => Pass index as param to function
+   To avoid index => Create hashmap with key as node value and value as index.
+
+-> height = max(left_height, right_height) + 1
+
+-> Pattern 1: Answer comes from children → goes UP (Bottom-Up)
+
+leaf → parent → parent → root
+So recursion builds the answer while returning.
+
+Template
+def dfs(node):
+    if not node:
+        return base_value
+    
+    left = dfs(node.left)
+    right = dfs(node.right)
+
+    # compute using children
+    result = combine(left, right)
+
+    return result
+
+Example 1: Height of Tree
+def height(node):
+    if not node:
+        return 0
+    
+    left = height(node.left)
+    right = height(node.right)
+
+    return max(left, right) + 1
+
+Problems using Bottom-Up :
+Height of tree
+Balanced binary tree
+Diameter of tree
+Maximum path sum
+Lowest common ancestor
+Sum tree
+Subtree checks
+
+Think - What information do I need from children?
+
+Pattern 2: State flows from root → children (Top-Down)
+
+root → child → child → leaf
+We carry state variables.
+
+Template
+def dfs(node, state):
+    if not node:
+        return
+
+    # update state
+    new_state = update(state, node)
+
+    dfs(node.left, new_state)
+    dfs(node.right, new_state)
+
+Example: Good Nodes in Tree
+def dfs(node, max_val):
+    if not node:
+        return 0
+
+    count = 0
+    if node.val > max_val:
+        count = 1
+
+    max_val = max(max_val, node.val)
+
+    return count + dfs(node.left, max_val) + dfs(node.right, max_val)
+
+Problems using Top-Down :
+Path sum
+Good nodes
+Root to leaf numbers
+Count paths
+Tree depth with constraints
+
+Think:
+What information should the child know from its parent?
+
+Ask yourself one question:
+❓ Do I need information from children? Yes → Bottom-Up
+❓ Do children need information from parent? Yes → Top-Down
+
+They follow this 4-step mental checklist:
+1. What should recursion return?
+2. What information should be passed?
+3. What is the base case?
+4. Combine results
+
+3️⃣ Pattern: Path Accumulation
+
+We maintain a path from root to current node.
+When to use - Problems about root-to-leaf paths.
+
+Template
+def dfs(node, path):
+    if not node:
+        return
+
+    path.append(node.val)
+
+    if is_leaf(node):
+        process(path)
+
+    dfs(node.left, path)
+    dfs(node.right, path)
+
+    path.pop()
+Example
+All root-to-leaf paths.
+
+Problems
+Binary tree paths
+Path sum II
+Root-to-leaf numbers
+Print all paths
+
+4️⃣ Pattern: Global Answer Update
+Return something while updating a global variable.
+When to use - When the answer may appear at any node, not just root.
+
+Template
+ans = something
+
+def dfs(node):
+    if not node:
+        return base
+
+    left = dfs(node.left)
+    right = dfs(node.right)
+
+    update_global(left, right)
+
+    return something
+Example
+Diameter of tree.
+
+ans = 0
+def dfs(node):
+    global ans
+
+    if not node:
+        return 0
+
+    left = dfs(node.left)
+    right = dfs(node.right)
+
+    ans = max(ans, left + right)
+
+    return max(left, right) + 1
+
+Problems
+Diameter of binary tree
+Maximum path sum
+Longest univalue path
+Maximum width
+
+5️⃣ Pattern: Ancestor / LCA Pattern
+Find node where two paths meet.
+When to use - Problems asking lowest common ancestor or distance between nodes.
+
+Template
+def dfs(node):
+    if not node or node == p or node == q:
+        return node
+
+    left = dfs(node.left)
+    right = dfs(node.right)
+
+    if left and right:
+        return node
+
+    return left if left else right
+
+Problems
+Lowest Common Ancestor
+Distance between two nodes
+LCA in BST
+Binary tree cameras
+
+6️⃣ Pattern: Level Traversal (BFS)
+Use queue instead of recursion.
+
+Template
+from collections import deque
+
+def bfs(root):
+    q = deque([root])
+
+    while q:
+        node = q.popleft()
+
+        if node.left:
+            q.append(node.left)
+        if node.right:
+            q.append(node.right)
+Problems
+Level order traversal
+Zigzag traversal
+Vertical order traversal
+Right view / left view
+Minimum depth
+
+Quick Pattern Recognition (Interview Trick)
+
+Ask yourself these questions:
+❓ Do I need information from children?➡️ Pattern 1
+❓ Do children need information from parent?➡️ Pattern 2
+❓ Am I building a root-to-leaf path?➡️ Pattern 3
+❓ Answer can appear at any node?➡️ Pattern 4
+❓ Finding relationship between two nodes?➡️ Pattern 5
+❓ Traversing level by level?➡️ Pattern 6
+
+1️⃣ When a Single Function Is Enough
+Use one function when the recursion does not need extra state from the parent.
+The recursive calls depend only on the node itself.
+
+Example: Invert Tree
+Problem: swap left and right.
+Why single function works: All information needed = current node . No extra parameters needed.
+
+Another Example - Counting nodes.
+def countNodes(root):
+    if not root:
+        return 0
+    
+    return 1 + countNodes(root.left) + countNodes(root.right)
+
+Again no extra state needed
+
+2️⃣ When We Need an Inner / Helper Function
+Use a helper when recursion needs extra parameters/state.
+
+Example situations:
+1. Need to pass constraints
+2. Need to track previous value
+3. Need to accumulate results
+4. Need additional recursion arguments
+
+Example 1: Validate BST
+We must pass min and max constraints.
+
+def isValidBST(root):
+
+    def validate(node, low, high):
+        if not node:
+            return True
+        
+        if not (low < node.val < high):
+            return False
+        
+        return (validate(node.left, low, node.val) and
+                validate(node.right, node.val, high))
+
+    return validate(root, float('-inf'), float('inf'))
+
+Why helper? Because recursion needs:
+node
+min constraint
+max constraint
+
+But the original function receives only root.
+
+Example 2: Track previous node
+Recover BST:
+prev
+first
+second
+These must be maintained across recursion. So we use an inner function.
+
+3️⃣ Another Common Case: Global State
+Example: largest BST subtree
+We maintain: max_size
+Shared across recursive calls.
+So we use helper:
+
+def largestBST(root):
+
+    max_size = 0
+    
+    def dfs(node):
+        nonlocal max_size
+
+4️⃣ Simple Rule (Interview Trick)
+
+Ask yourself:
+Does recursion require extra information besides the current node?
+If NO → single function.
+If YES → helper function.
+
+5️⃣ Mental Template
+
+Single Function Pattern
+def solve(node):
+    if base case:
+        return something
+    
+    left = solve(node.left)
+    right = solve(node.right)
+    
+    return combine(left, right)
+
+Helper Function Pattern
+def solve(root):
+
+    def dfs(node, extra_parameters):
+        ...
+    
+    dfs(root, initial_values)
+
+6️⃣ Quick Comparison
+Only node needed	Single function
+Need extra parameters	Helper function
+Need shared state	Helper function
+Need wrapper logic	Helper function
+7️⃣ Pro Tip (Google Interviews)
+Many tree problems follow two recursion styles:
+
+Style 1 — Return answers upward
+Example:
+diameter
+balanced tree
+largest BST
+
+Style 2 — Pass constraints downward
+Example:
+validate BST
+path sum
+max depth with conditions
+
+These usually require helper functions.
+
+✅ Simple memory rule
+
+If recursion arguments increase → helper function
+If recursion arguments stay same → single function
+

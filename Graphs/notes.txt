@@ -1,0 +1,501 @@
+Miscellaneous :
+container(x) means “iterate over x and insert elements. - deque([1]), set([1]), list([1])
+
+GRAPH PATTERNS
+
+Problem Clue	Likely Algorithm
+Shortest path, no weights	BFS
+Shortest path, weights, source to all other vertices	Dijkstra
+Negative weights, source to all other vertices	Bellman-Ford
+All pair shortest path
+Task scheduling	Floyd-Warshall
+Topological sort
+Detect cycle	DFS / Kahn
+Minimum cost to connect	MST
+Islands / regions	DFS / BFS
+Grouping / connectivity	DSU
+Dependency loops	Strongly Connected Components
+
+1. What Problem Does Union-Find Solve?
+👉 Dynamic connectivity
+Meaning:
+•	Are two nodes in the same connected component?
+•	Can we efficiently merge components?
+Typical questions:
+•	“Do u and v belong to the same group?”
+•	“How many connected components are there?”
+•	“Does adding this edge create a cycle?”
+________________________________________
+2. Intuition (Think Like This)
+Imagine:
+•	Each node starts as its own group
+•	Groups keep merging over time
+•	You want:
+o	Fast find group leader
+o	Fast merge two groups
+This is exactly what DSU does.
+12. Where Union-Find Is Used (Must Recognize)
+Problem Type	Why DSU
+Cycle detection (undirected)	Detect same component
+Kruskal’s MST	Efficient merging
+Number of connected components	Count roots
+Dynamic graph connectivity	Fast queries
+Islands merging	Union adjacent lands
+________________________________________
+13. Where Union-Find FAILS (Important)
+❌ Cannot handle:
+•	Directed graphs properly
+•	Path-related queries
+•	Shortest paths
+•	Remove edges easily
+📌 Many people misuse DSU — interviewers watch for this.
+________________________________________
+14. Interview Pattern Recognition
+If problem has:
+•	Offline queries
+•	“Are they connected?”
+•	Incremental edge addition
+•	No direction matters
+🚨 Think DSU immediately
+
+Dijkstra’s Algorithm (Interview Explanation)
+1. What problem does it solve?
+Find the shortest path from a source node to all other nodes in a weighted graph with non-negative edge weights.
+Key points Google expects you to say:
+•	Graph can be directed or undirected
+•	Edge weights must be non-negative
+•	Computes shortest distances, not just one path
+•	“Dijkstra’s algorithm is a greedy shortest-path algorithm that repeatedly selects the unvisited node with the smallest known distance and relaxes its outgoing edges. It works only with non-negative edge weights.”
+“Dijkstra’s time complexity depends on the priority queue. With a binary heap and adjacency list, we perform V extract-min operations and up to E decrease-key operations, each costing log V, resulting in O((V + E) log V).”
+
+Bellman–Ford Algorithm (Interview Explanation)
+1. What problem does it solve?
+Find the shortest path from a single source to all other vertices in a weighted graph, even when edge weights are negative.
+Key properties:
+•	Works for directed and undirected graphs
+•	Allows negative edge weights
+•	Detects negative weight cycles
+•	Slower than Dijkstra
+________________________________________
+2. Core Idea (Intuition)
+Bellman–Ford is based on dynamic programming, not greedy choice.
+Key insight:
+The shortest path between two nodes can have at most V − 1 edges
+(because a simple path cannot repeat vertices)
+
+Negative cycle detection:
+•	Do one more pass
+•	If any distance still improves → negative cycle exists
+7. Time & Space Complexity
+Time:
+•	Outer loop: V − 1
+•	Inner loop: E
+O(V · E)
+Space:
+O(V)
+10. Interview-Ready One-Liner
+“Bellman–Ford computes shortest paths by relaxing all edges V − 1 times, allowing negative weights and detecting negative cycles, with time complexity O(VE).”
+
+Floyd–Warshall Algorithm (Interview Explanation)
+1. What problem does it solve?
+Find the shortest paths between all pairs of vertices in a weighted graph.
+Key properties:
+•	Works for directed and undirected graphs
+•	Allows negative edge weights
+•	Detects negative cycles
+•	Uses dynamic programming
+•	Best for dense graphs or small V
+________________________________________
+2. Core Idea (Intuition)
+Instead of fixing a source, Floyd–Warshall asks:
+“If I am allowed to use vertices {1..k} as intermediate nodes, what is the shortest path from i to j?”
+We build the solution incrementally, allowing one more intermediate vertex at a time.
+We don’t need 3D DP — we reuse the same matrix:
+dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+This is the heart of Floyd–Warshall.
+
+Initialize dist matrix:
+•	dist[i][i] = 0
+•	dist[u][v] = weight(u,v)
+•	No edge → ∞
+
+6. Negative Cycle Detection
+After algorithm finishes:
+•	If any dist[i][i] < 0 → negative cycle exists
+Reason:
+•	A negative cycle lets you return to the same node with lower cost
+
+7. Time & Space Complexity
+Time:
+O(V³)
+Space:
+O(V²)
+
+Minimum Spanning Tree (MST) — Big Picture
+What is an MST?
+A Minimum Spanning Tree of a connected, undirected, weighted graph is:
+•	Connects all vertices
+•	Uses exactly V − 1 edges
+•	Has minimum total edge weight
+•	Contains no cycles
+⚠️ Important:
+•	Graph must be undirected
+•	If graph is disconnected → Minimum Spanning Forest
+•	1️⃣ Prim’s Algorithm
+
+•	Core Idea (Intuition)
+•	Prim’s is like Dijkstra for MST:
+•	Start from any node and grow the MST one vertex at a time, always choosing the cheapest edge that connects the tree to a new vertex.
+
+“In Dijkstra, a node is connected via the edge that gives the shortest path from the source, while in an MST a node is connected via the globally cheapest edge that avoids cycles — these choices can differ even with all positive weights.”
+Algorithm Steps
+1.	Pick any start vertex
+2.	Maintain:
+o	visited[] (vertices already in MST)
+o	Min-heap of edges crossing the cut
+3.	While MST has fewer than V − 1 edges:
+o	Extract minimum-weight edge (u, v)
+o	If v is not visited:
+	Add edge to MST
+	Mark v visited
+	Push all edges from v to heap
+
+
+With an adjacency list and binary heap, it performs V extract-min and up to E decrease-key operations, each costing log V, resulting in O((V + E) log V).”
+•  Prim is better for dense graphs
+•  Kruskal is simpler for sparse graphs
+
+eg : S->A->C->B->S  wts = 1,2,3,5
+In Dijkstra, cost from S->B = 5
+In Prims, MST will be = S->A->C->B . so cost of path from S to B=6
+Kruskal’s Algorithm
+Core Idea (Intuition)
+Kruskal’s is edge-based:
+Sort all edges by weight and keep adding the smallest edge as long as it doesn’t form a cycle.
+Cycle detection is done using Union–Find (DSU).
+________________________________________
+Algorithm Steps
+1.	Sort all edges by weight
+2.	Initialize DSU with V sets
+3.	For each edge (u, v) in sorted order:
+o	If find(u) ≠ find(v):
+	Add edge to MST
+	union(u, v)
+4.	Stop after V − 1 edges
+________________________________________
+Time Complexity
+•	Sorting edges: O(E log E)
+•	Union–Find operations: O(E α(V))
+Total:
+O(E log E) ≈ O(E log V)
+________________________________________
+Space Complexity
+O(V + E)
+
+3️⃣ Prim vs Kruskal (Very Important)
+Aspect	Prim	Kruskal
+Strategy	Vertex-based	Edge-based
+Data structure	Heap	Union–Find
+Best for	Dense graphs	Sparse graphs
+Handles disconnected graph	❌	✅
+Similar to	Dijkstra	Sorting + DSU
+“Kruskal’s algorithm sorts E edges, which costs O(E log E). Since a graph with V vertices has at most O(V²) edges, log E is O(log V), so we usually write the complexity as O(E log V).”
+Topological Sorting (Topo Sort)
+1. What is Topological Sorting?
+A topological ordering of a directed graph is a linear ordering of vertices such that
+for every directed edge u → v, u appears before v in the ordering.
+Important conditions
+•	Graph must be a Directed Acyclic Graph (DAG)
+•	If there is a cycle → topological sort does NOT exist
+3. Key Properties (Interview Gold)
+•	Only defined for directed graphs
+•	Can have multiple valid orders
+•	Exists iff graph has no cycle
+•	DAG always has at least one vertex with indegree 0
+•	1️⃣ Kahn’s Algorithm (BFS-based)
+•	Repeatedly remove nodes with indegree = 0.
+•	Such nodes have no prerequisites, so they can safely come first.
+Steps
+1.	Compute indegree of each vertex
+2.	Push all vertices with indegree 0 into a queue
+3.	While queue not empty:
+o	Pop a vertex u
+o	Add it to topo order
+o	For each edge u → v:
+	Decrease indegree of v
+	If indegree becomes 0, push v
+4.	If topo order size < V → cycle exists
+________________________________________
+Time Complexity
+•	Computing indegree: O(E)
+•	BFS traversal: O(V + E)
+✅ Total:
+O(V + E)
+________________________________________
+Space Complexity
+O(V + E)
+________________________________________
+Cycle Detection (Very Important)
+If after processing:
+processed nodes < V
+→ cycle exists
+This is frequently asked.
+________________________________________
+2️⃣ DFS-Based Topological Sort
+Core Idea
+A node is added to the topo order after all its descendants are processed.
+So:
+•	Postorder DFS
+•	Reverse the result
+________________________________________
+Steps
+1.	Maintain visited[]
+2.	For each unvisited node:
+o	Run DFS
+3.	After DFS finishes for a node:
+o	Push it to stack
+4.	Reverse the stack
+________________________________________
+Time Complexity
+•	DFS visits each vertex and edge once
+O(V + E)
+________________________________________
+Cycle Detection (DFS)
+Use:
+•	visited[]
+•	recursionStack[]
+If you see a back-edge → cycle exists
+________________________________________
+Comparison: Kahn vs DFS
+Aspect	Kahn (BFS)	DFS
+Uses indegree	✅	❌
+Uses recursion	❌	✅
+Easy cycle detection	✅	⚠️
+Stack overflow risk	❌	⚠️
+Multiple valid orders	✅	✅
+
+6. Interview-Ready One-Liner
+“Topological sorting orders vertices of a DAG so that every directed edge goes from left to right, and it can be computed in O(V + E) using either BFS with indegrees or DFS with postorder traversal.”
+
+What is 0/1 BFS?
+0/1 BFS is a shortest-path algorithm for graphs where edge weights are only 0 or 1.
+It computes single-source shortest paths faster than Dijkstra.
+________________________________________
+Why Do We Need It?
+Dijkstra
+•	Works for any non-negative weights
+•	Uses min-heap
+•	Time:
+•	O((V + E) log V)
+0/1 BFS
+•	Special case: weights ∈ {0,1}
+•	Uses deque, not heap
+•	Time:
+•	O(V + E)
+So if weights are only 0 or 1 → don’t use Dijkstra.
+________________________________________
+Core Idea (Very Important)
+In Dijkstra:
+•	We always expand the minimum distance node
+In 0/1 BFS:
+•	We simulate this without a heap
+Trick:
+•	Use a deque
+•	If edge weight = 0 → push front
+•	If edge weight = 1 → push back
+This preserves increasing distance order.
+________________________________________
+Algorithm Steps
+1.	Initialize dist[source] = 0, others = ∞
+2.	Push source into deque
+3.	While deque not empty:
+o	Pop front node u
+o	For each edge u → v with weight w:
+	If dist[u] + w < dist[v]:
+	Update dist[v]
+	If w == 0 → push_front(v)
+	If w == 1 → push_back(v)
+________________________________________
+Why Does This Work?
+Because:
+•	Weight 0 edges don’t increase distance
+•	Weight 1 edges increase distance by exactly 1
+•	Deque ordering ensures:
+o	Nodes with smaller distances are processed first
+o	Same guarantee as Dijkstra but cheaper
+
+2️⃣ Cycle Detection in Directed Graph (DFS)
+Key Idea
+In a directed graph:
+•	Direction matters
+•	Visiting a node again doesn’t always mean a cycle
+We need to detect a back edge:
+An edge to a node currently in the recursion stack
+________________________________________
+Algorithm
+Use two arrays:
+•	visited[] → fully processed
+•	recStack[] → nodes in current DFS path
+Cycle exists if:
+u → v and recStack[v] == True
+
+“Kahn’s algorithm repeatedly removes nodes with zero indegree. If a cycle exists, all nodes in the cycle have indegree ≥ 1, so none can be removed, and the algorithm processes fewer than V nodes.” If Kahn’s algorithm cannot process all vertices, the graph contains a cycle.
+
+3️⃣ Why the Logic Is Different (Very Important)
+Graph Type	Why parent check works?	Why recStack needed?
+Undirected	Edge appears twice	Direction doesn’t exist
+Directed	❌	Need to detect back edges
+
+6️⃣ Alternative Methods (Mention Briefly)
+Graph	Alternative
+Undirected	Union–Find
+Directed	Kahn’s algorithm (Topo sort)
+________________________________________
+7️⃣ Interview One-Liners
+Undirected:
+“If I find a visited neighbor that is not my parent, a cycle exists.”
+Directed:
+“If I encounter an edge to a node currently in the recursion stack, that’s a back edge forming a cycle.”
+Graph Type	DFS Cycle Detection Tool
+Undirected	Parent check
+Directed	Recursion stack
+
+2️⃣ Google-Level Graph Problem Patterns
+This is more important than algorithms.
+________________________________________
+🔥 Pattern 1: Graph Traversal / Reachability
+Keywords:
+•	“Can reach”
+•	“Connected”
+•	“Path exists”
+•	“Number of islands”
+Algorithms:
+•	DFS / BFS
+•	Union–Find
+________________________________________
+🔥 Pattern 2: Shortest Path
+Unweighted
+•	BFS
+Weighted (non-negative)
+•	Dijkstra
+Negative weights
+•	Bellman–Ford
+Grid / Matrix
+•	BFS / Dijkstra
+•	0-1 BFS
+________________________________________
+🔥 Pattern 3: Cycle Detection
+Graph Type	Algorithm
+Undirected	Union–Find / DFS
+Directed	DFS (rec stack) / Kahn
+________________________________________
+🔥 Pattern 4: DAG Problems (Very Common)
+Keywords:
+•	“Dependencies”
+•	“Prerequisites”
+•	“Build order”
+Algorithms:
+•	Topological Sort
+•	Topo + DP
+Classic Google problems:
+•	Course Schedule
+•	Alien Dictionary
+•	Longest path in DAG
+________________________________________
+🔥 Pattern 5: Minimum Spanning Tree
+Keywords:
+•	“Connect all nodes with minimum cost”
+•	“Minimum cost to connect cities”
+Algorithms:
+•	Prim
+•	Kruskal
+________________________________________
+🔥 Pattern 6: Strongly Connected Components
+Keywords:
+•	“Mutual reachability”
+•	“Cycles in directed graph”
+•	“Condensation graph”
+Algorithms:
+•	Tarjan
+•	Kosaraju
+________________________________________
+🔥 Pattern 7: Grid Graphs (Google Favorite)
+Keywords:
+•	Matrix
+•	2D movement
+•	Obstacles
+Algorithms:
+•	BFS
+•	DFS
+•	Dijkstra
+•	Multi-source BFS
+________________________________________
+🔥 Pattern 8: Multi-Source BFS
+Keywords:
+•	“Nearest”
+•	“Minimum distance from any source”
+Examples:
+•	Rotten oranges
+•	Walls and gates
+________________________________________
+🔥 Pattern 9: Graph + State
+Keywords:
+•	“With constraints”
+•	“Minimum operations”
+Algorithms:
+•	BFS with state (node, mask)
+•	Dijkstra with state
+________________________________________
+🔥 Pattern 10: Bipartite Graph
+Keywords:
+•	“Two groups”
+•	“Conflict”
+•	“Odd cycle”
+Algorithms:
+•	BFS / DFS coloring
+________________________________________
+🔥 Pattern 11: Flow / Matching (Hard Google)
+Keywords:
+•	“Maximum assignment”
+•	“Capacity”
+•	“Matching”
+Algorithms:
+•	Max flow
+•	Bipartite matching
+________________________________________
+🔥 Pattern 12: Graph Compression
+Keywords:
+•	“Group nodes”
+•	“Condense cycles”
+Algorithms:
+•	SCC + DAG
+________________________________________
+3️⃣ How Google Expects You to Choose an Algorithm
+Ask these in order:
+1.	Directed or undirected?
+2.	Weighted or unweighted?
+3.	Negative edges?
+4.	Single-source or all-pairs?
+5.	Tree, DAG, or general graph?
+6.	Need minimum cost or shortest path?
+
+#	Pattern Name	How to Model as Graph	Node Definition	Edge Definition	Typical Algorithm	Classic Examples
+1	Grid / Matrix	Each cell is a node	(r, c)	Valid moves (up/down/left/right)	BFS / Dijkstra	Number of Islands, Rotten Oranges
+2	Word Transformation	Words differ by one char	word	One-letter change	BFS	Word Ladder
+3	State + Constraints	Full state is node	(state variables)	Valid operation	BFS / Dijkstra	Open the Lock
+4	Scheduling / Dependencies	Tasks as nodes	task	u → v dependency	Topological Sort	Course Schedule
+5	Jump / Range Problems	Indices as nodes	index	Valid jump	BFS / Greedy	Jump Game III
+6	Equations / Relations	Variables as nodes	variable	Weighted relation	DFS / BFS	Evaluate Division
+7	Games / Puzzles	Board configuration	board state	Legal move	BFS / DFS	Sliding Puzzle
+8	Implicit Number Graph	Numbers as nodes	number	Operation result	BFS / Dijkstra	Integer Replacement
+9	Bitmask / Subset State	(node, mask)	(current, visited)	Add/remove bit	BFS / DP	Shortest Path Visiting All Nodes
+10	Optimization → Shortest Path	State-based	state	Costed transition	Dijkstra	Cheapest Flights K Stops
+
+Problem Keyword	Use This
+Minimum steps	BFS
+Minimum cost	Dijkstra
+Dependencies	Topological Sort
+All pairs	Floyd / BFS from each
+Cycles	DFS / Kahn
+Connectivity	DFS / Union–Find
+

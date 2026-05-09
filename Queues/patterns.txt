@@ -1,0 +1,80 @@
+P1] Perfect number
+“Every perfect number can be represented as X concatenated with its reverse, where X consists only of 1s and 2s. 
+I generate X in BFS order using a queue and mirror it to get the Ath perfect number.”
+
+-> Monotonic deque
+
+Sliding Window Maximum (queue/deque)
+We maintain a deque of indices, such that. Elements are in decreasing order of values
+Front of deque = max of current window
+
+🧱 Rules of the Deque
+For each index i:
+
+1️⃣ Remove out-of-window elements
+2️⃣ Maintain decreasing order
+3️⃣ Add current index
+4️⃣ Record answer
+
+“I use a monotonic decreasing deque to maintain candidates for maximum in each sliding window, achieving O(N) time.”
+
+-> Basic Queue Simulation
+📌 “Process things in the same order they arrive”
+
+When to use
+Given operations like push, pop, move to back
+Clock cycles / scheduling problems
+
+-> Sliding Window (Fixed Size)
+
+📌 “Process B consecutive elements efficiently”
+
+When to use
+Max / Min in every window of size B
+Moving average
+Busiest section / max customers
+
+Data structure
+👉 Deque (double-ended queue)
+
+Examples
+Sliding Window Maximum
+First negative number in window
+Max of all subarrays of size B
+
+Key insight
+Maintain only useful elements
+
+-> Monotonic Queue
+“Maintain increasing or decreasing order”
+
+Monotonic Increasing	Minimum in window
+Monotonic Decreasing	Maximum in window
+
+Used in
+Sliding window max/min
+Optimizing DP
+Removing dominated elements
+
+Core rule
+While last element is useless → remove it
+
+-> Queue + BFS (Level Order)
+
+-> Circular Queue
+“Fixed size queue with wrap-around”
+
+When to use
+Buffers
+Limited capacity resources
+
+Key idea
+rear = (rear + 1) % size
+front = (front + 1) % size
+
+-> Queue + HashMap / Frequency Tracking
+“Track first / most frequent / non-repeating”
+
+“Is this problem asking me to remember the past, or discard useless past?”
+If discard → Monotonic queue
+

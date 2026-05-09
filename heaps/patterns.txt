@@ -1,0 +1,109 @@
+✅ Pattern 1 — Top K Elements (MOST IMPORTANT)
+“Find k largest / smallest”
+“Top k frequent”
+“k closest”
+“k best”
+Dataset is large, k is small 👉 Use a heap of size k
+
+👉 Keep only the best k seen so far.
+
+✅ Pattern 2 — Merge K Sorted Lists / Streams
+Multiple sorted arrays/lists
+Need fully sorted output
+Need smallest element among many lists
+
+👉 Use min heap
+🧠 Trick
+Push first element of each list into heap
+Then pop smallest
+push next element from same list
+
+✅ Pattern 3 — Running Median (Two Heaps)
+
+Streaming numbers
+Need median at every step
+
+👉 Use two heaps
+max heap → left half
+min heap → right half
+🧠 Rule
+balance sizes
+max(left) <= min(right)
+Median:
+if equal size → avg
+else → bigger heap top
+
+✅ Pattern 4 — Scheduling / Greedy with Priority
+Tasks with deadlines
+Meeting rooms
+CPU scheduling
+Minimize waiting time
+
+👉 Always pick best candidate next → heap
+
+✅ Pattern 6 — Heap as BFS on Values (Advanced)
+This is SUPER IMPORTANT for tough interviews
+🔎 Recognition clues
+“kth smallest in sorted matrix”
+“ugly numbers”
+“smallest sum combinations”
+
+👉 Think:
+not BFS on graph
+but BFS on values
+using heap
+
+🎯 SUPER IMPORTANT HEAP RULES (memorize)
+
+⭐ Rule 1
+If problem says kth smallest or kth largest → heap immediately
+⭐ Rule 2
+If problem says continuously need smallest element → min heap
+⭐ Rule 3
+If input is huge but answer small → heap of size k
+
+To keep k largest → use min heap
+To keep k smallest → use max heap
+
+-> Kth Smallest Element in a Sorted Matrix
+
+Put first element of each row into min heap
+Pop smallest
+Insert next element from that row
+Repeat k times
+
+-> Running median
+
+if x <= maxheap.top → push to maxheap else → push to minheap
+size difference ≤ 1. If violated, move top element from bigger heap → smaller heap
+if equal size → average of tops else → top of bigger heap
+
+-> If problem says:
+
+✔ streaming numbers
+✔ median at every step
+✔ sliding window median
+✔ dynamic ranking
+
+Immediately think TWO HEAPS
+
+-> BEST-FIRST SEARCH using MAX HEAP 
+eg: 
+
+If arrays are sorted descending largest sum = A[0] + B[0]
+Next largest must be one of:
+
+A[1] + B[0]
+A[0] + B[1]
+
+This forms a grid: (i,j) → neighbors → (i+1,j), (i,j+1)
+
+Push neighbors only if not already visited. Use a set to track visited pairs.
+
+If problem says:
+
+✔ combinations from TWO arrays
+✔ want top K sums
+✔ arrays individually sortable
+
+Immediately think sort + heap + visited pairs

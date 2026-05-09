@@ -1,0 +1,199 @@
+1️⃣ Matching / Balancing Pattern
+
+👉 Stack used to match pairs or validate order. Common signals
+“valid”
+“balanced”
+parentheses, brackets, tags
+
+Core idea
+opening → push
+closing → pop & check match
+
+Trick
+Empty stack at end ⇒ valid
+Mismatch / early pop ⇒ invalid
+
+2️⃣ Monotonic Stack - Stack that is always increasing or decreasing
+
+Used for
+Next Greater / Smaller Element
+Stock Span
+Histogram problems
+Sliding window extremes
+
+Two types
+Monotonic Increasing
+Monotonic Decreasing
+
+Mental model - “Pop until the stack becomes valid again”
+Trick - Store indices, not values
+Direction matters (left → right vs right → left)
+
+3️⃣ Expression Evaluation Pattern - Stack for operands + operators
+
+Core idea :
+Number → push
+Operator → pop operands → compute → push back
+
+Trick - Handle precedence carefully
+Use 2 stacks for infix (operators + operands)
+
+4️⃣ Undo / Backtracking Pattern
+
+Stack = history
+
+Trick :
+Push state before change
+Pop to revert
+
+5️⃣ Simulation / Process Control - Stack to simulate real-world behavior
+
+Signal - “Process one by one, undo previous if conflict”
+
+6️⃣ Remove / Reduce Pattern - Repeatedly remove elements based on rules
+
+Idea :
+If current char conflicts with stack top → pop
+Else → push
+
+7️⃣ Canonical Form / Normalization - Convert input into simplest form
+
+Trick :
+Stack stores meaningful tokens only
+Ignore useless elements early
+
+8️⃣ Stack with Extra Info - Push more than just value
+
+Examples
+(value, minSoFar)
+(value, count)
+
+Trick :
+Avoid O(n) scans
+Track info while pushing
+
+1️⃣1️⃣ Two Stacks Technique
+
+Implement queue using stacks
+Implement stack using queues
+
+Key trick
+
+One stack for input
+One stack for output
+
+🧠 Interview Mindset Checklist (Stack)
+
+Ask yourself:
+Do I need to undo, reverse, or match?
+Do I need last seen element?
+Is order important?
+Can I maintain monotonicity?
+If YES → stack is likely involved.
+
+P1] Maximum Frequency stack
+
+“What exactly decides which element gets popped?” - Frequency (primary), Recency (secondary)
+Golden rule:
+When a problem has two priorities, separate them.
+
+Handle frequency first - 
+You immediately think: freq[x] → how many times x appeared
+
+“Among elements with the SAME frequency, how do I know which is closest to the top?”
+Answer - I need stack behavior per frequency.
+For each frequency f → keep a stack
+
+Track the max frequency using maxFreq variable. No sorting all the time.
+
+“I treat each push as a frequency transition event and group elements by their current frequency using stacks.”
+
+Monotonic Stacks :
+
+For maximum contribution:
+How far can I go left while everything is smaller?
+How far can I go right while everything is smaller?
+
+For minimum contribution:
+How far can I go left while everything is greater?
+How far can I go right while everything is greater?
+
+These boundaries are exactly:
+Previous Greater / Next Greater
+Previous Smaller / Next Smaller
+
+If for index i:
+left = i - L
+right = R - i
+
+Then A[i] contributes A[i] * left * right
+
+Monotonic stacks tell me how long an element can “dominate” as max or min.
+
+For MAX: Left: <= , Right: <
+For MIN: Left: >= , Right: >
+This prevents double counting when duplicates exist.
+“For duplicates, I use strict comparison on one side and non-strict on the other so each subarray is attributed to exactly one index.”
+Among equal maximum elements, the rightmost one will own the subarray.
+
+P2] Largest rectangle in histogram
+
+left = previous smaller index
+right = next smaller index
+width = right - left - 1
+area = A[i] * width
+
+For monotonic stack approach - “For each bar, find its maximum width”
+For Two pointers try: “For each width, find best height”
+
+Container With Most Water
+👉 Pick TWO bars to maximize area.
+Largest Rectangle in Histogram
+👉 Pick a CONTINUOUS range where the SHORTEST bar decides height.
+Trapping Rain Water
+👉 For EACH bar, figure out how much water sits on top of it.
+
+Rain Water: “How high can water rise here?”
+→ Needs the tallest walls
+
+Histogram: “How wide can this bar stretch?”
+→ Needs the first wall that blocks it
+
+Tallest wall ≠ nearest wall
+That’s the whole difference.
+
+Problem	Uses left	Uses right
+Rain Water	max on left	max on right
+Histogram	nearest smaller on left	nearest smaller on right
+
+🌧️ Rain Water
+We care about:
+
+tallest bar on the left
+tallest bar on the right
+
+👉 Not the nearest, the maximum.
+
+🧱 Histogram
+We care about:
+
+nearest smaller bar on the left
+nearest smaller bar on the right
+
+👉 Not the maximum, but the first blocker.
+
+P3] Infix to Postfix
+
+1️⃣ Operands (a–z)
+Output immediately
+
+2️⃣ Operators (+ - * / ^)
+Pop operators from stack with higher or equal precedence
+Then push current operator
+
+3️⃣ Parentheses
+( → push to stack
+) → pop until matching (
+
+“I scan the infix expression left to right, output operands immediately, and use a stack to manage operators based on precedence and associativity, popping when required.”
+

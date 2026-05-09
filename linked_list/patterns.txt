@@ -1,0 +1,220 @@
+2️⃣ Two Pointers (Slow & Fast)
+
+📌 “Move pointers at different speeds”
+When to use
+Detect cycles
+Find middle
+Find kth from end
+
+Variants
+Slow	Fast
++1 step	+2 steps
++1 step	+k steps
+Examples
+Detect cycle (Floyd)
+Middle of linked list
+Remove Nth node from end
+
+3️⃣ Cycle Detection Pattern
+
+📌 “Does the list loop back?”
+
+Key ideas
+If slow == fast → cycle exists
+Reset one pointer to head → meeting point gives cycle start
+
+Examples
+Detect loop
+Find loop starting node
+Length of cycle
+
+4️⃣ Reversal Patterns
+
+📌 “Change pointer directions”
+
+Types
+Reverse entire list
+Reverse first K nodes
+Reverse in groups of K
+Reverse sublist (L to R)
+
+Core idea
+prev, curr, next
+
+Examples
+Reverse linked list
+Reverse nodes in k-group
+Palindrome linked list (half reverse)
+
+5️⃣ Dummy Node Pattern
+
+📌 “Handle head edge cases cleanly”
+
+When to use
+Insertion/deletion near head
+Merging lists
+
+Why dummy helps
+Avoids special handling of head
+
+Examples
+Remove Nth from end
+Merge two sorted lists
+Partition list
+
+6️⃣ Merge Pattern (Two Sorted Lists)
+
+📌 “Like merge step of merge sort”
+
+When to use
+Sorted lists
+Combine or compare
+
+Examples
+Merge two sorted lists
+Merge K sorted lists
+Sort linked list
+
+7️⃣ Divide & Conquer
+
+📌 “Break list into halves”
+Used with Slow & fast pointer
+
+Examples
+
+Merge sort on linked list
+Convert sorted list to BST
+
+8️⃣ Palindrome Pattern
+📌 “Check symmetry”
+
+Steps
+Find middle
+Reverse second half
+Compare halves
+(Optional) Restore list
+
+Examples
+Palindrome linked list
+
+9️⃣ Intersection Pattern
+
+📌 “Two lists meet at a node”
+
+Trick
+Align lengths or Switch pointers at ends
+
+Examples
+Intersection of two linked lists
+
+🔟 Reordering / Rearrangement
+📌 “Change relative order”
+
+Examples
+Odd-even linked list
+Reorder list (L0→Ln→L1→Ln-1)
+Rotate list
+
+1️⃣1️⃣ Deletion without Head Reference
+📌 “You can’t go backwards”
+
+Trick
+Copy data from next node
+Delete next node
+
+Example
+Delete node in linked list
+
+1️⃣2️⃣ Multi-pointer / Window on Linked List
+📌 “Simulate sliding window”
+
+Examples
+Remove duplicates
+Partition around value
+Remove zero-sum sublists
+
+“In linked lists, nodes don’t move — pointers do.”
+Linked lists shine where insert/delete is frequent.
+
+-> If moving fast only B steps instead of B+1 then slow lands on the node to delete, not before it.
+
+✅ Rule
+fast should be B+1 nodes ahead of slow
+So that slow.next = node to delete
+
+Checklist (Before Submitting)
+✔ Used dummy node?
+✔ Fast moved B+1 steps?
+✔ Handled B ≥ length?
+✔ Deleted via slow.next?
+✔ Returned dummy.next?
+
+-> Partition list
+2 dummy lists
+We do not rearrange values.
+We re-link nodes into two lists and then join them.
+
+-> How to check if loop is present in the given linkedlist or not 
+Take two pointers - slow and fast and initialize them with head of linkedlist.
+Keep moving slow by one step and fast by two steps.
+If at any point slow and fast are meeting, that means, loop is detected.
+After that, to find the first node in the loop, re-initialize just slow with head of linkedlist.
+Keep moving slow and fast both by one step only. They will meet again and they will meet at first node of the loop.
+Finally, break the loop.
+
+-> LRU
+
+We maintain:
+Head <-> Most Recently Used
+Tail <-> Least Recently Used
+
+get(key)
+If key not in map → return -1
+If exists:
+Move node to head (mark as recently used)
+Return value
+
+set(key, value)
+If key exists:
+Update value
+Move node to head
+
+If key does not exist:
+If capacity full:
+Remove tail node
+Remove its key from map
+Insert new node at head
+Add to map
+
+Why is DLL used in LRU cache?
+Because We must remove arbitrary node in O(1). We need prev pointer to do that cleanly. 
+SLL cannot remove a node in O(1) without knowing previous node.
+
+Both SLL and DLL:
+
+Traversal → O(n)
+Search → O(n)
+
+DLL gives:
+Easier deletion
+Backward movement
+Slightly more space
+
+-> LFU
+
+LFU must track:
+Frequency count
+Recency among same frequency
+
+✅ Data Structures Needed To achieve O(1) for get & put:
+
+1️⃣ key → node
+key_map = {}
+
+2️⃣ freq → doubly linked list of nodes
+freq_map = {}
+Each frequency has its own LRU order.
+
+3️⃣ min_freq
+Track the minimum frequency currently present.
+

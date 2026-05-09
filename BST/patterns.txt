@@ -1,0 +1,49 @@
+🌲 PART 2: BST PATTERNS
+
+BST gives you ordering power.
+Left < Root < Right
+
+🔥 Pattern 1: Search in BST (O(h))
+if key < root.val:
+    go left
+else:
+    go right
+
+🔥 Pattern 2: Validate BST
+
+Use inorder + previous pointer.
+Or use range check:
+
+def validate(node, low, high):
+    if not node:
+        return True
+
+    if not (low < node.val < high):
+        return False
+
+    return validate(node.left, low, node.val) and validate(node.right, node.val, high)
+
+🔥 Pattern 3: Kth Smallest
+
+Inorder traversal with counter.
+Or iterative stack.
+
+🔥 Pattern 4: BST Iterator
+
+Simulate inorder using stack.
+
+🔥 Pattern 5: Build BST from Sorted Array
+
+Divide and conquer.
+Pick middle as root.
+
+🔥 Pattern 6: Recover Swapped BST
+
+Detect two violations in inorder.
+
+-> Valid BST
+This problem follows the Tree Recursion Pattern: Passing Constraints Down the Tree (constraint propagation)
+Each node must satisfy:
+
+min < node.val < max
+

@@ -1,0 +1,149 @@
+⭐ PATTERN 1 — Frequency Counting (MOST COMMON)
+Store how many times each element appears.
+
+✅ Identify this pattern when:
+"count occurrences"
+"duplicates"
+"most frequent"
+"anagram"
+"majority"
+
+🎯 Trick
+Use:
+map[key] = map.get(key,0)+1
+
+⭐ PATTERN 2 — Prefix Sum + HashMap (VERY IMPORTANT)
+Store prefix sum positions.
+prefix += nums[i]
+if prefix - target exists answer found
+
+✅ Identify this pattern when:
+subarray sum = K
+longest subarray with condition
+zero sum subarray
+equal 0s and 1s
+
+⭐ PATTERN 3 — Store Index Instead of Value
+Instead of storing frequency:
+map[value] = index
+
+✅ Identify when:
+need distance between indices
+nearest duplicate
+earliest occurrence matters
+
+🎯 Interview trick
+Always ask Do I need first index OR last index? This matters hugely.
+
+⭐ PATTERN 4 — HashMap + Sliding Window (VERY IMPORTANT)
+Use hashmap to track window validity.
+
+expand right. update map
+while invalid shrink left
+
+✅ Identify when:
+substring problems
+at most K distinct
+no repeating characters
+
+⭐ PATTERN 5 — Grouping Pattern
+Group elements by some key.
+map[key].append(item)
+
+✅ Identify when:
+"group"
+"cluster"
+"same pattern"
+"anagram grouping"
+
+🎯 Trick
+Use tuple(sorted(word)) or count[26] as key.
+
+⭐ PATTERN 6 — HashMap as Cache / Lookup Table
+Precompute answers for quick lookup.
+
+✅ Identify when:
+repeated queries
+fast lookup needed
+memoization
+
+⭐ PATTERN 7 — Bidirectional Mapping
+Maintain two maps:
+
+A -> B
+B -> A
+✅ Identify when:
+bijection needed
+pattern matching
+isomorphic strings
+
+⭐ PATTERN 8 — Hashing Complex Objects as Keys (ADVANCED)
+Use:
+tuple
+string representation
+bitmask
+frozen set
+
+as hashmap key.
+
+⭐ PATTERN 9 — Difference Tracking HashMap
+Store:
+
+value - index
+value + index
+difference
+ratio
+🔥 Problems
+Max points on line
+Arithmetic sequences
+
+⭐ PATTERN 10 — HashMap + Heap Combo
+Count first → heap later.
+freq map → push into heap
+
+🧠 HOW TO IDENTIFY HASHMAP PROBLEM IN 5 SECONDS
+If you see:
+✅ "count"
+✅ "duplicate"
+✅ "frequency"
+✅ "pair exists"
+✅ "subarray with sum"
+✅ "group similar"
+✅ "fast lookup"
+👉 Immediately think HashMap
+
+-> Longest consecutive sequences
+
+left  = map.get(num-1, 0)
+right = map.get(num+1, 0)
+new_length = left + 1 + right
+
+Now update:
+map[num] = new_length
+map[num-left]  = new_length   # left boundary
+map[num+right] = new_length   # right boundary
+
+-> Palindrome pairs
+a classic HashMap + string split + reverse lookup
+
+Time = O(N * L²)
+Space = O(N)
+
+(L = word length)
+
+If you see:
+
+✅ concatenate two strings
+✅ need palindrome
+✅ find pairs
+
+Immediately think:
+
+“HashMap of reversed strings + try splits”
+
+-> Finding rectangle in binary matrix
+Two rows share two columns where both have 1
+
+previous row had 1 at c1,c2
+current row also has 1 at c1,c2
+→ rectangle exists
