@@ -227,3 +227,38 @@ Because you're removing it using mid ± 1.
 
 ❓ Are we keeping mid in range? If YES → use <
 Because you are narrowing until one candidate remains.
+
+-> condition selection
+
+Exact Match Binary Search :
+
+Usually:
+mid = (left + right) // 2
+
+Updates:
+if condition:
+    left = mid + 1
+else:
+    right = mid - 1
+
+Notice:
+mid gets eliminated every iteration
+
+Boundary Binary Search
+
+Usually:
+mid = (left + right) // 2
+
+Updates:
+left = mid + 1
+OR
+right = mid
+
+Notice:
+mid may survive
+
+while left <= right
+👉 “Find target”
+
+while left < right
+👉 “Find boundary / minimum / answer space”
